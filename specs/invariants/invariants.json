@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "source": "P00_FOUNDATION_SPECIFICATION.md §10 (statements verbatim). p00_refs are resolved mechanically by scripts/validate-specs.ts: 'path' must exist; 'path#text' must exist and contain the text (a test title).",
+  "invariants": [
+    {
+      "id": "INV-001",
+      "statement": "Models cannot directly execute external side effects.",
+      "p00_scope": "enforced",
+      "p00_refs": [
+        "tests/contract/extension-contracts.test.ts#a model tool call is a proposal only",
+        "tests/contract/no-authority.test.ts#imports only allow-listed, side-effect-free modules"
+      ],
+      "notes": "ModelAdapter exposes generate/stream only; tool calls are ToolCallProposal data."
+    },
+    {
+      "id": "INV-002",
+      "statement": "Tool execution must pass through the capability gateway.",
+      "p00_scope": "boundary",
+      "p00_refs": [
+        "packages/capabilities/src/registry.ts",
+        "tests/contract/extension-contracts.test.ts#fails closed for unknown capabilities and invalid arguments"
+      ],
+      "notes": "P00 registry validates, times out and fails closed; the full gateway is P05."
+    },
+    {
+      "id": "INV-003",
+      "statement": "Consequential actions require policy evaluation.",
+      "p00_scope": "boundary",
+      "p00_refs": [
+        "packages/contracts/src/records.ts",
+        "packages/policy/src/index.ts",
+        "tests/integration/langgraph-postgres.test.ts#executes, streams, and records the run lifecycle"
+      ],
+      "notes": "ProposedAction/PolicyDecision contracts and a recorded demo decision; the policy engine is P06."
+    },
+    {
+      "id": "INV-004",
+      "statement": "Permissions are enforced outside prompts.",
+      "p00_scope": "boundary",
+      "p00_refs": [
+        "packages/policy/src/index.ts",
+        "packages/contracts/test/records.test.ts#defaults every scope to no access"
+      ],
+      "notes": "Scopes and allowed/denied capabilities are structured contract data, not prompt text."
+    },
+    {
+      "id": "INV-005",
+      "statement": "Every agent has finite resource limits.",
+      "p00_scope": "enforced",
+      "p00_refs": [
+        "packages/contracts/test/records.test.ts#requires a finite budget",
+        "tests/contract/extension-contracts.test.ts#scaling decisions are checked against declared limits"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "INV-006",
+      "statement": "Every child agent belongs to a root run and parent lineage.",
+      "p00_scope": "enforced",
+      "p00_refs": ["packages/contracts/test/records.test.ts#enforces parent lineage within one root run"],
+      "notes": ""
+    },
+    {
+      "id": "INV-007",
+      "statement": "Important state-changing operations emit durable events.",
+      "p00_scope": "enforced",
+      "p00_refs": [
+        "tests/integration/postgres.test.ts#records events durably in order with causation links",
+        "tests/e2e/restart-resume.test.ts#persists across process death"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "INV-008",
+      "statement": "Artifacts carry provenance and integrity hashes.",
+      "p00_scope": "enforced",
+      "p00_refs": [
+        "packages/contracts/test/records.test.ts#requires provenance and a sha256 digest",
+        "tests/integration/artifacts.test.ts#put/get/exists/metadata/verify_hash round-trip",
+        "tests/failure/p00-failures.test.ts#F10 artifact hash mismatch"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "INV-009",
+      "statement": "Completion follows verification policy.",
+      "p00_scope": "boundary",
+      "p00_refs": ["packages/contracts/src/records.ts"],
+      "notes": "verification_policy is mandatory on AgentSpec and Task; verification behaviour is P09."
+    },
+    {
+      "id": "INV-010",
+      "statement": "Secrets do not enter ordinary prompt context.",
+      "p00_scope": "enforced",
+      "p00_refs": [
+        "packages/contracts/test/records.test.ts#rejects raw secret values in secret scope",
+        "packages/config/test/config.test.ts#never includes secret values in errors or serialised config",
+        "packages/observability/test/redaction.test.ts#never writes a secret-like value passed by mistake"
+      ],
+      "notes": "Typed SecretRef in contracts; SecretString in config; redacting logger."
+    },
+    {
+      "id": "INV-011",
+      "statement": "Cancellation must eventually propagate to owned execution.",
+      "p00_scope": "boundary",
+      "p00_refs": [
+        "tests/contract/extension-contracts.test.ts#enforces the declared timeout and output schema"
+      ],
+      "notes": "AbortSignal is part of the model and capability ports; end-to-end cancellation propagation is a later phase."
+    },
+    {
+      "id": "INV-012",
+      "statement": "Unknown execution outcome is not automatically treated as failure.",
+      "p00_scope": "enforced",
+      "p00_refs": ["packages/contracts/test/records.test.ts#keeps UNKNOWN distinct from FAILED"],
+      "notes": "Smoke harness maps DB_DISCONNECTED/UNKNOWN_OUTCOME to run status UNKNOWN, not FAILED."
+    },
+    {
+      "id": "INV-013",
+      "statement": "Untrusted content cannot become trusted instruction implicitly.",
+      "p00_scope": "enforced",
+      "p00_refs": ["tests/contract/extension-contracts.test.ts#MCP discovery never implies authorisation"],
+      "notes": "Context messages and extension metadata carry an explicit trust level."
+    },
+    {
+      "id": "INV-014",
+      "statement": "Self-improvement cannot silently rewrite security authority.",
+      "p00_scope": "deferred",
+      "p00_refs": [],
+      "notes": "No self-improvement exists in P00 (non-goal); owned by P17."
+    },
+    {
+      "id": "INV-015",
+      "statement": "Human denial overrides agent intent.",
+      "p00_scope": "enforced",
+      "p00_refs": [
+        "packages/orchestration/test/smoke-graph.test.ts#human denial overrides intent",
+        "tests/contract/extension-contracts.test.ts#human denial overrides; policy DENY cannot be approved away"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "INV-016",
+      "statement": "Model implementations are replaceable behind contracts.",
+      "p00_scope": "enforced",
+      "p00_refs": ["tests/contract/extension-contracts.test.ts#adapters are replaceable behind the registry"],
+      "notes": ""
+    },
+    {
+      "id": "INV-017",
+      "statement": "No agent receives unrestricted system access by default.",
+      "p00_scope": "enforced",
+      "p00_refs": [
+        "packages/contracts/test/records.test.ts#defaults every scope to no access",
+        "tests/contract/no-authority.test.ts#contains no process, network, eval or dynamic-import use",
+        "tests/contract/extension-contracts.test.ts#refuses to register any capability with side effects in P00"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "INV-018",
+      "statement": "Autonomous actions are auditable.",
+      "p00_scope": "boundary",
+      "p00_refs": [
+        "tests/integration/langgraph-postgres.test.ts#executes, streams, and records the run lifecycle"
+      ],
+      "notes": "Durable causal event chain with trace/correlation IDs; full audit trail grows with later phases."
+    },
+    {
+      "id": "INV-019",
+      "statement": "Context fragments have provenance.",
+      "p00_scope": "boundary",
+      "p00_refs": ["packages/models/src/index.ts"],
+      "notes": "ContextMessage requires provenance {source, trust}; the context compiler is P04."
+    },
+    {
+      "id": "INV-020",
+      "statement": "Unknown authority/state fails safely.",
+      "p00_scope": "enforced",
+      "p00_refs": [
+        "tests/contract/extension-contracts.test.ts#unknown authority denies",
+        "tests/failure/p00-failures.test.ts#F01 invalid configuration"
+      ],
+      "notes": ""
+    }
+  ]
+}

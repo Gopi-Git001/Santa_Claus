@@ -1,0 +1,229 @@
+# P00 CI pipeline (P00_FOUNDATION_SPECIFICATION.md §27).
+# Every job calls the same repository scripts developers run locally. Third-party
+# actions are pinned to full commit SHAs (supply-chain threat model); the token
+# is read-only. Database jobs use a job-local PostgreSQL service container with
+# ephemeral per-run credentials (never a committed secret).
+name: p00
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p00-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+  HARNESS_ENV: ci
+  HARNESS_ARTIFACT_ROOT: .data/artifacts
+
+jobs:
+  validate-lockfiles:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - run: corepack pnpm install --frozen-lockfile
+      - run: node scripts/check-lockfiles.ts
+
+  validate-spec-ledger:
+    # Fails with exit 2 (BLOCKED) until the authoritative C001–C168 catalog is imported (P00-BLK-001).
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: node scripts/generate-spec-docs.ts --check
+      - run: node scripts/validate-specs.ts
+
+  typecheck-ts:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm exec tsc --noEmit -p tsconfig.json
+      - run: node scripts/export-schemas.ts --check
+
+  lint-ts:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm exec biome ci .
+
+  test-ts:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm exec vitest run --project unit
+
+  lint-type-test-python:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - run: node scripts/python-check.ts
+
+  fmt-clippy-test-rust:
+    # Same pinned container recipe as local development (infra/ci/rust.Dockerfile), rebuilt from scratch.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/rust-check.ts --fresh
+
+  contract-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm exec vitest run --project contract
+
+  integration-postgres:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:18.6-trixie@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
+        env:
+          POSTGRES_USER: harness
+          POSTGRES_PASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+          POSTGRES_DB: harness_dev
+        ports: ["55432:5432"]
+        options: --health-cmd "pg_isready -U harness -d harness_dev" --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      DATABASE_URL: postgres://harness:ci-${{ github.run_id }}-${{ github.run_attempt }}@127.0.0.1:55432/harness_dev
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: node scripts/db-migrate.ts
+      - run: corepack pnpm exec vitest run --project integration --project failure
+
+  langgraph-smoke:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:18.6-trixie@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
+        env:
+          POSTGRES_USER: harness
+          POSTGRES_PASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+          POSTGRES_DB: harness_dev
+        ports: ["55432:5432"]
+        options: --health-cmd "pg_isready -U harness -d harness_dev" --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      DATABASE_URL: postgres://harness:ci-${{ github.run_id }}-${{ github.run_attempt }}@127.0.0.1:55432/harness_dev
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: node scripts/smoke.ts
+
+  persistence-resume:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:18.6-trixie@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
+        env:
+          POSTGRES_USER: harness
+          POSTGRES_PASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+          POSTGRES_DB: harness_dev
+        ports: ["55432:5432"]
+        options: --health-cmd "pg_isready -U harness -d harness_dev" --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      DATABASE_URL: postgres://harness:ci-${{ github.run_id }}-${{ github.run_attempt }}@127.0.0.1:55432/harness_dev
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm exec vitest run --project e2e
+      - run: node scripts/p00/persistence-resume.ts
+
+  security-baseline:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: node scripts/check-secrets.ts
+      - run: node scripts/check-boundaries.ts
+      - run: corepack pnpm exec vitest run tests/contract/no-authority.test.ts tests/contract/secret-scan.test.ts tests/contract/boundaries.test.ts
+
+  traceability-audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - run: corepack pnpm install --frozen-lockfile
+      - run: node scripts/validate-specs.ts --json traceability-audit.json
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: traceability-audit
+          path: traceability-audit.json
+
+  evidence-manifest:
+    # Full acceptance ladder + independent verifier; uploads evidence/P00 for review.
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:18.6-trixie@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722
+        env:
+          POSTGRES_USER: harness
+          POSTGRES_PASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+          POSTGRES_DB: harness_dev
+        ports: ["55432:5432"]
+        options: --health-cmd "pg_isready -U harness -d harness_dev" --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      DATABASE_URL: postgres://harness:ci-${{ github.run_id }}-${{ github.run_attempt }}@127.0.0.1:55432/harness_dev
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - run: corepack pnpm install --frozen-lockfile
+      - run: node scripts/p00/acceptance.ts --ci --skip-fresh-env
+      - if: always()
+        run: node scripts/p00/verify.ts
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: p00-evidence
+          path: evidence/P00

@@ -1,7 +1,11 @@
 /**
  * Local bootstrap (P00 spec §6 "local bootstrap command").
  *
- *   node scripts/bootstrap.ts [--no-db] [--no-python]
+ *   node scripts/bootstrap.ts [--no-db] [--no-python] [--db-port N] [--compose-project NAME]
+ *
+ * --db-port / --compose-project only apply when .env is first generated; they
+ * let a second checkout (e.g. the fresh-environment reproduction) run its own
+ * isolated database next to the main one.
  *
  * 1. check the Node version against .nvmrc
  * 2. install JS dependencies from the lockfile (frozen)
@@ -15,10 +19,18 @@
 import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { composeArgs } from "./lib/dev-env.ts";
 import { PNPM, run } from "./lib/proc.ts";
 
 const root = join(import.meta.dirname, "..");
-const args = new Set(process.argv.slice(2));
+const argv = process.argv.slice(2);
+const args = new Set(argv);
+const optValue = (name: string) => (args.has(name) ? argv[argv.indexOf(name) + 1] : undefined);
+const dbPort = optValue("--db-port");
+const composeProject = optValue("--compose-project");
+if (dbPort !== undefined && !/^\d{2,5}$/.test(dbPort)) throw new Error("--db-port must be a port number");
+if (composeProject !== undefined && !/^[a-z0-9][a-z0-9_-]*$/.test(composeProject))
+  throw new Error("--compose-project must be a lowercase compose project name");
 
 function step(name: string, argv: string[], env?: NodeJS.ProcessEnv): void {
   console.log(`\n==> ${name}: ${argv.join(" ")}`);
@@ -48,7 +60,10 @@ const envPath = join(root, ".env");
 if (existsSync(envPath)) {
   console.log("\n==> .env exists; leaving it unchanged");
 } else {
-  const template = readFileSync(join(root, ".env.example"), "utf8");
+  let template = readFileSync(join(root, ".env.example"), "utf8");
+  if (dbPort !== undefined) template = template.replace(/^HARNESS_DB_PORT=.*$/m, `HARNESS_DB_PORT=${dbPort}`);
+  if (composeProject !== undefined)
+    template = template.replace(/^HARNESS_COMPOSE_PROJECT=.*$/m, `HARNESS_COMPOSE_PROJECT=${composeProject}`);
   const values = new Map(
     template
       .split(/\r?\n/)
@@ -68,18 +83,7 @@ if (existsSync(envPath)) {
 
 // 4 + 5. database
 if (!args.has("--no-db")) {
-  step("postgres", [
-    "docker",
-    "compose",
-    "--env-file",
-    ".env",
-    "-f",
-    "infra/dev/docker-compose.yml",
-    "up",
-    "-d",
-    "--wait",
-    "postgres",
-  ]);
+  step("postgres", [...composeArgs(root), "up", "-d", "--wait", "postgres"]);
   step("migrate", ["node", "--env-file=.env", "scripts/db-migrate.ts"]);
 }
 
