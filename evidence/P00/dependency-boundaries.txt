@@ -1,0 +1,6 @@
+# command: node scripts/check-boundaries.ts
+# started_at: 2026-09-29T02:43:17.283Z
+# exit_code: 0
+# duration_ms: 194
+
+{"check":"dependency-boundaries","violations":0}

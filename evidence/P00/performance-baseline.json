@@ -1,0 +1,57 @@
+{
+  "kind": "p00-performance-baseline",
+  "generated_at": "2026-09-29T02:47:33.951Z",
+  "host": {
+    "platform": "win32",
+    "release": "10.0.19045",
+    "cpus": 4,
+    "cpu_model": "Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz",
+    "total_mem_mb": 7587
+  },
+  "notes": [
+    "Development machine, Docker Desktop PostgreSQL 18.6; not a production SLO.",
+    "graph_invocation includes run/event bookkeeping and all checkpoint writes of a 4-node run (no LLM).",
+    "checkpoint_write is not separable from graph execution through the public port; checkpoint rows per run are reported instead."
+  ],
+  "bootstrap_ms": 33477,
+  "graph_invocation": {
+    "n": 20,
+    "min_ms": 163.5,
+    "p50_ms": 196.63,
+    "p95_ms": 254.34,
+    "max_ms": 254.34
+  },
+  "checkpoint_rows_per_4_node_run": 6,
+  "checkpoint_read_inspect": {
+    "n": 50,
+    "min_ms": 2.51,
+    "p50_ms": 2.94,
+    "p95_ms": 4.62,
+    "max_ms": 8.48
+  },
+  "event_write": {
+    "n": 100,
+    "min_ms": 2.74,
+    "p50_ms": 3.5,
+    "p95_ms": 5.31,
+    "max_ms": 8.77
+  },
+  "artifact_put_1kib": {
+    "n": 50,
+    "min_ms": 3.23,
+    "p50_ms": 3.47,
+    "p95_ms": 4.42,
+    "max_ms": 4.78
+  },
+  "artifact_get_verify_1kib": {
+    "n": 50,
+    "min_ms": 1.95,
+    "p50_ms": 2.24,
+    "p95_ms": 4.52,
+    "max_ms": 7.65
+  },
+  "smoke_process_memory_mb": {
+    "rss": 201,
+    "heap_used": 58
+  }
+}

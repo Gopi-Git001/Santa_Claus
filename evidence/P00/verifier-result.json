@@ -1,0 +1,271 @@
+{
+  "kind": "p00-independent-verification",
+  "generated_at": "2026-09-29T02:49:18.359Z",
+  "phase": "P00",
+  "status": "INCOMPLETE",
+  "counts": {
+    "PASS": 25,
+    "FAIL": 1,
+    "BLOCKED": 6,
+    "NOT_VERIFIED": 1
+  },
+  "open_blockers": [
+    {
+      "id": "P00-BLK-001",
+      "status": "OPEN",
+      "title": "Authoritative C001-C168 capability catalog is missing",
+      "kind": "specification_gap",
+      "recorded_at": "2026-09-28",
+      "recorded_by": "claude-code (on explicit user instruction)",
+      "description": "MASTER_PROJECT_WORKFLOW.md section 5 defines only capability-family ranges. No authoritative per-ID title, description, domain, owning phase, dependencies, or mandatory flag exists for C001-C168. The user confirmed this gap and will supply the official catalog.",
+      "blocked_gate_items": [
+        "Requirements: C001-C168 unique",
+        "Requirements: 168/168 assigned to domains",
+        "Requirements: 168/168 assigned to owning phases",
+        "Requirements: all dependency references valid",
+        "Requirements: P00-owned requirements have test/evidence mappings",
+        "Architecture: P00-P18 registry valid (owned capability IDs per phase)",
+        "CI/evidence: traceability-audit job green"
+      ],
+      "constraints": [
+        "C001-C168 are reserved IDs; do not invent, infer, renumber, or assign them.",
+        "Do not create placeholder capability definitions.",
+        "Do not mark the traceability gate complete.",
+        "Do not mark P00 VERIFIED while this blocker is OPEN."
+      ],
+      "resolution": "Import the user-provided CAPABILITY_CATALOG.md / machine-readable ledger, validate all 168 records, then resume traceability acceptance work."
+    }
+  ],
+  "test_totals": {
+    "unit": {
+      "total": 130,
+      "passed": 130,
+      "failed": 0,
+      "skipped": 0
+    },
+    "contract": {
+      "total": 50,
+      "passed": 50,
+      "failed": 0,
+      "skipped": 0
+    },
+    "integration": {
+      "total": 28,
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0
+    },
+    "failure": {
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0
+    },
+    "e2e": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "criteria": [
+    {
+      "section": "Architecture",
+      "item": "16 domains documented.",
+      "status": "PASS",
+      "detail": "0 issue(s); re-validated"
+    },
+    {
+      "section": "Architecture",
+      "item": "P00--P18 registry valid.",
+      "status": "BLOCKED",
+      "detail": "19 phases structurally valid; 71 field(s) pending the authoritative specification/catalog (P00-BLK-001)"
+    },
+    {
+      "section": "Architecture",
+      "item": "architectural invariants registered.",
+      "status": "PASS",
+      "detail": "INV-001..INV-020; 0 registry issue(s); enforced invariants without passing tests: none"
+    },
+    {
+      "section": "Architecture",
+      "item": "dependency-direction rules enforced.",
+      "status": "PASS",
+      "detail": "0 violation(s) on independent re-run; planted-violation tests passed=true"
+    },
+    {
+      "section": "Requirements",
+      "item": "C001--C168 unique.",
+      "status": "BLOCKED",
+      "detail": "specs/capabilities/ledger.json absent — authoritative catalog not provided (P00-BLK-001)"
+    },
+    {
+      "section": "Requirements",
+      "item": "168/168 assigned to domains.",
+      "status": "BLOCKED",
+      "detail": "specs/capabilities/ledger.json absent — authoritative catalog not provided (P00-BLK-001)"
+    },
+    {
+      "section": "Requirements",
+      "item": "168/168 assigned to owning phases.",
+      "status": "BLOCKED",
+      "detail": "specs/capabilities/ledger.json absent — authoritative catalog not provided (P00-BLK-001)"
+    },
+    {
+      "section": "Requirements",
+      "item": "all dependency references valid.",
+      "status": "BLOCKED",
+      "detail": "specs/capabilities/ledger.json absent — authoritative catalog not provided (P00-BLK-001)"
+    },
+    {
+      "section": "Requirements",
+      "item": "P00-owned requirements have test/evidence mappings.",
+      "status": "BLOCKED",
+      "detail": "specs/capabilities/ledger.json absent — authoritative catalog not provided (P00-BLK-001)"
+    },
+    {
+      "section": "Toolchain",
+      "item": "clean bootstrap succeeds.",
+      "status": "PASS",
+      "detail": "fresh clone of 1f25edc: 15/15 steps ok"
+    },
+    {
+      "section": "Toolchain",
+      "item": "TypeScript strict checks pass.",
+      "status": "PASS",
+      "detail": "tsc strict=true exit ok=true; biome ok=true"
+    },
+    {
+      "section": "Toolchain",
+      "item": "Python baseline checks pass.",
+      "status": "PASS",
+      "detail": "sync=0 versions=0 ruff-lint=0 ruff-format=0 mypy=0 pytest=0"
+    },
+    {
+      "section": "Toolchain",
+      "item": "Rust baseline checks pass.",
+      "status": "PASS",
+      "detail": "rustc 1.98.1 (48a229cea 2026-09-01); cargo 1.98.1 (797e8a9bc 2026-08-05); rustfmt 1.9.0-stable (48a229ceae 2026-09-01); clippy 0.1.98 (48a229ceae 2026-09-01); fresh=true"
+    },
+    {
+      "section": "Runtime",
+      "item": "LangGraph.js smoke graph executes.",
+      "status": "PASS",
+      "detail": "smoke outcome=completed; 15 events"
+    },
+    {
+      "section": "Runtime",
+      "item": "streaming/event observation works.",
+      "status": "PASS",
+      "detail": "4 streamed node updates; causal chains intact=true/true"
+    },
+    {
+      "section": "Runtime",
+      "item": "durable checkpoint path works.",
+      "status": "PASS",
+      "detail": "PostgreSQL checkpoint rows at interrupt=5; checkpoint-row tests passed"
+    },
+    {
+      "section": "Runtime",
+      "item": "process/runtime restart-resume proof passes.",
+      "status": "PASS",
+      "detail": "three_distinct_processes=true checkpointing_process_killed_abruptly=true checkpoint_persisted_before_restart=true interrupt_pending_after_restart=true resumed_to_completion=true explicit_human_response_recorded=true run_status_completed=true causal_chain_intact_across_processes=true pre_restart_nodes_not_reexecuted=true"
+    },
+    {
+      "section": "Runtime",
+      "item": "interrupt/resume proof passes.",
+      "status": "PASS",
+      "detail": "before=interrupted after=completed"
+    },
+    {
+      "section": "Runtime",
+      "item": "thread isolation proof passes.",
+      "status": "PASS",
+      "detail": "foreign run, unknown thread and completed thread all rejected with classified errors; other thread untouched"
+    },
+    {
+      "section": "Persistence/artifacts",
+      "item": "PostgreSQL migrations are reproducible.",
+      "status": "PASS",
+      "detail": "idempotent re-run, identical schema on a fresh database, tamper detection"
+    },
+    {
+      "section": "Persistence/artifacts",
+      "item": "artifact put/get/hash verification passes.",
+      "status": "PASS",
+      "detail": "integration artifacts suite + F10 hash-mismatch scenario"
+    },
+    {
+      "section": "Persistence/artifacts",
+      "item": "evidence manifest validates.",
+      "status": "PASS",
+      "detail": "0 issue(s)"
+    },
+    {
+      "section": "Security/quality",
+      "item": "configuration validation passes.",
+      "status": "PASS",
+      "detail": "config unit suite + F01"
+    },
+    {
+      "section": "Security/quality",
+      "item": "secret-redaction fixture passes.",
+      "status": "PASS",
+      "detail": "redaction fixture + F12 passed; real DB secret found in 0 evidence file(s) (3 secret value(s) checked)"
+    },
+    {
+      "section": "Security/quality",
+      "item": "failure suite passes.",
+      "status": "PASS",
+      "detail": "15/15 passed; expected≠observed or missing: none"
+    },
+    {
+      "section": "Security/quality",
+      "item": "no general shell/network authority exists in P00 smoke graph.",
+      "status": "PASS",
+      "detail": "static import/token audit of smoke graph + side-effect capabilities refused"
+    },
+    {
+      "section": "Security/quality",
+      "item": "dependency boundary audit passes.",
+      "status": "PASS",
+      "detail": "0 violation(s)"
+    },
+    {
+      "section": "CI/evidence",
+      "item": "evidence is bound to the verified commit (supports all criteria).",
+      "status": "PASS",
+      "detail": "evidence commit 1f25edc5e2da500941892b9498a79e6be7a0dd69 (HEAD 1f25edc5e2da500941892b9498a79e6be7a0dd69); only evidence/ changed since"
+    },
+    {
+      "section": "CI/evidence",
+      "item": "all mandatory CI jobs green.",
+      "status": "NOT_VERIFIED",
+      "detail": "all 14 CI job equivalents pass locally (scripts/p00/acceptance.ts); no hosted-ci.json record of a hosted run for 1f25edc — branch not pushed (project-owner decision)"
+    },
+    {
+      "section": "CI/evidence",
+      "item": "P00 evidence directory complete.",
+      "status": "PASS",
+      "detail": "all required evidence files and baseline metrics present"
+    },
+    {
+      "section": "CI/evidence",
+      "item": "P00-REPORT.md records exact commands, versions, results, failures, limitations.",
+      "status": "PASS",
+      "detail": "sections 7/7; cites evidence commit=true; report verdict=INCOMPLETE vs verifier=INCOMPLETE"
+    },
+    {
+      "section": "CI/evidence",
+      "item": "no unexplained skipped mandatory tests.",
+      "status": "PASS",
+      "detail": "vitest skipped/todo=0; pytest skipped=0; rust ignored per cargo output (0 in rust-checks run)"
+    },
+    {
+      "section": "CI/evidence",
+      "item": "independent verifier returns success.",
+      "status": "FAIL",
+      "detail": "see non-PASS criteria"
+    }
+  ]
+}

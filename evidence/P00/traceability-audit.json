@@ -1,0 +1,475 @@
+{
+  "audit": "p00-traceability",
+  "status": "BLOCKED",
+  "errors": 0,
+  "blocked": 72,
+  "generated_at": "2026-09-29T02:44:55.299Z",
+  "sections": {
+    "domains": {
+      "status": "VALID",
+      "stats": {
+        "count": 16
+      },
+      "issues": []
+    },
+    "invariants": {
+      "status": "VALID",
+      "stats": {
+        "count": 20,
+        "enforced": 12,
+        "boundary": 7,
+        "deferred": 1
+      },
+      "issues": []
+    },
+    "phases": {
+      "status": "BLOCKED",
+      "stats": {
+        "count": 19
+      },
+      "issues": [
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P00",
+          "message": "P00.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P01",
+          "message": "P01.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P01",
+          "message": "P01.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P02",
+          "message": "P02.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P02",
+          "message": "P02.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P02",
+          "message": "P02.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P02",
+          "message": "P02.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P03",
+          "message": "P03.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P03",
+          "message": "P03.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P03",
+          "message": "P03.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P03",
+          "message": "P03.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P04",
+          "message": "P04.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P04",
+          "message": "P04.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P04",
+          "message": "P04.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P04",
+          "message": "P04.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P05",
+          "message": "P05.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P05",
+          "message": "P05.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P05",
+          "message": "P05.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P05",
+          "message": "P05.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P06",
+          "message": "P06.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P06",
+          "message": "P06.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P06",
+          "message": "P06.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P06",
+          "message": "P06.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P07",
+          "message": "P07.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P07",
+          "message": "P07.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P07",
+          "message": "P07.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P07",
+          "message": "P07.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P08",
+          "message": "P08.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P08",
+          "message": "P08.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P08",
+          "message": "P08.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P08",
+          "message": "P08.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P09",
+          "message": "P09.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P09",
+          "message": "P09.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P09",
+          "message": "P09.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P09",
+          "message": "P09.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P10",
+          "message": "P10.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P10",
+          "message": "P10.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P10",
+          "message": "P10.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P10",
+          "message": "P10.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P11",
+          "message": "P11.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P11",
+          "message": "P11.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P11",
+          "message": "P11.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P11",
+          "message": "P11.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P12",
+          "message": "P12.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P12",
+          "message": "P12.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P12",
+          "message": "P12.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P12",
+          "message": "P12.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P13",
+          "message": "P13.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P13",
+          "message": "P13.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P13",
+          "message": "P13.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P13",
+          "message": "P13.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P14",
+          "message": "P14.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P14",
+          "message": "P14.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P14",
+          "message": "P14.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P14",
+          "message": "P14.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P15",
+          "message": "P15.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P15",
+          "message": "P15.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P15",
+          "message": "P15.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P15",
+          "message": "P15.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P16",
+          "message": "P16.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P16",
+          "message": "P16.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P16",
+          "message": "P16.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P16",
+          "message": "P16.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P17",
+          "message": "P17.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P17",
+          "message": "P17.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P17",
+          "message": "P17.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P17",
+          "message": "P17.exit_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P18",
+          "message": "P18.prerequisites is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P18",
+          "message": "P18.owned_capability_ids is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P18",
+          "message": "P18.entry_criteria is not defined by the authoritative specifications"
+        },
+        {
+          "severity": "blocked",
+          "code": "PHASE_FIELD_PENDING",
+          "subject": "P18",
+          "message": "P18.exit_criteria is not defined by the authoritative specifications"
+        }
+      ]
+    },
+    "capabilities": {
+      "status": "BLOCKED",
+      "stats": {
+        "records": 0,
+        "expected": 168
+      },
+      "issues": [
+        {
+          "severity": "blocked",
+          "code": "LEDGER_MISSING",
+          "subject": "P00-BLK-001",
+          "message": "specs/capabilities/ledger.json does not exist: the authoritative C001–C168 catalog has not been provided"
+        }
+      ]
+    }
+  }
+}

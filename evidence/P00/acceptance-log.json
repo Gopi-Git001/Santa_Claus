@@ -1,0 +1,313 @@
+{
+  "kind": "p00-acceptance-log",
+  "generated_at": "2026-09-29T02:47:42.011Z",
+  "rungs": [
+    {
+      "rung": "install (frozen lockfile)",
+      "command": "corepack pnpm install --frozen-lockfile",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:10.828Z",
+      "duration_ms": 414,
+      "evidence": []
+    },
+    {
+      "rung": "PostgreSQL up",
+      "command": "node scripts/dev-db.ts up",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:11.247Z",
+      "duration_ms": 1787,
+      "evidence": []
+    },
+    {
+      "rung": "migrations (reproducible)",
+      "command": "node --env-file-if-exists=.env scripts/db-migrate.ts",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:13.034Z",
+      "duration_ms": 650,
+      "evidence": [
+        "evidence/P00/migrations.txt"
+      ]
+    },
+    {
+      "rung": "validate-lockfiles",
+      "command": "node scripts/check-lockfiles.ts --json C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\dependency-lock-summary.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:13.685Z",
+      "duration_ms": 513,
+      "evidence": [
+        "evidence/P00/dependency-lock-summary.json"
+      ]
+    },
+    {
+      "rung": "typecheck-ts (strict)",
+      "command": "corepack pnpm exec tsc --noEmit -p tsconfig.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:14.198Z",
+      "duration_ms": 2099,
+      "evidence": [
+        "evidence/P00/typecheck.txt"
+      ]
+    },
+    {
+      "rung": "lint-ts (biome)",
+      "command": "corepack pnpm exec biome check .",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:16.298Z",
+      "duration_ms": 983,
+      "evidence": [
+        "evidence/P00/lint.txt"
+      ]
+    },
+    {
+      "rung": "dependency-boundaries",
+      "command": "node scripts/check-boundaries.ts",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:17.283Z",
+      "duration_ms": 194,
+      "evidence": [
+        "evidence/P00/dependency-boundaries.txt"
+      ]
+    },
+    {
+      "rung": "schema drift",
+      "command": "node scripts/export-schemas.ts --check",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:17.478Z",
+      "duration_ms": 410,
+      "evidence": [
+        "evidence/P00/schema-drift.txt"
+      ]
+    },
+    {
+      "rung": "generated spec docs current",
+      "command": "node scripts/generate-spec-docs.ts --check",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:17.889Z",
+      "duration_ms": 158,
+      "evidence": [
+        "evidence/P00/generated-docs.txt"
+      ]
+    },
+    {
+      "rung": "unit tests",
+      "command": "corepack pnpm exec vitest run --project unit --reporter=default --reporter=json --outputFile.json=C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\unit-tests.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:18.048Z",
+      "duration_ms": 6235,
+      "evidence": [
+        "evidence/P00/unit-tests.json"
+      ]
+    },
+    {
+      "rung": "contract tests",
+      "command": "corepack pnpm exec vitest run --project contract --reporter=default --reporter=json --outputFile.json=C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\contract-tests.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:24.283Z",
+      "duration_ms": 5105,
+      "evidence": [
+        "evidence/P00/contract-tests.json"
+      ]
+    },
+    {
+      "rung": "integration tests",
+      "command": "corepack pnpm exec vitest run --project integration --reporter=default --reporter=json --outputFile.json=C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\integration-tests.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:29.388Z",
+      "duration_ms": 12011,
+      "evidence": [
+        "evidence/P00/integration-tests.json"
+      ]
+    },
+    {
+      "rung": "failure tests",
+      "command": "corepack pnpm exec vitest run --project failure --reporter=default --reporter=json --outputFile.json=C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\failure-tests.vitest.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:41.399Z",
+      "duration_ms": 8301,
+      "evidence": [
+        "evidence/P00/failure-tests.vitest.json"
+      ]
+    },
+    {
+      "rung": "e2e tests",
+      "command": "corepack pnpm exec vitest run --project e2e --reporter=default --reporter=json --outputFile.json=C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\e2e-tests.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:43:49.701Z",
+      "duration_ms": 15965,
+      "evidence": [
+        "evidence/P00/e2e-tests.json"
+      ]
+    },
+    {
+      "rung": "python lint/type/test",
+      "command": "node scripts/python-check.ts --json C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\python-checks.json --junit C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\python-tests.xml",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:44:05.666Z",
+      "duration_ms": 3997,
+      "evidence": [
+        "evidence/P00/python-checks.json",
+        "evidence/P00/python-tests.xml"
+      ]
+    },
+    {
+      "rung": "rust fmt/clippy/test (container, fresh)",
+      "command": "node scripts/rust-check.ts --fresh --json C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\rust-checks.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:44:09.664Z",
+      "duration_ms": 28209,
+      "evidence": [
+        "evidence/P00/rust-checks.json"
+      ]
+    },
+    {
+      "rung": "langgraph-smoke",
+      "command": "node --env-file-if-exists=.env scripts/smoke.ts --json C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\langgraph-smoke.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:44:37.873Z",
+      "duration_ms": 3630,
+      "evidence": [
+        "evidence/P00/langgraph-smoke.json"
+      ]
+    },
+    {
+      "rung": "persistence-resume (multi-process)",
+      "command": "node --env-file-if-exists=.env scripts/p00/persistence-resume.ts --json C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\persistence-resume.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:44:41.503Z",
+      "duration_ms": 13079,
+      "evidence": [
+        "evidence/P00/persistence-resume.json"
+      ]
+    },
+    {
+      "rung": "traceability-audit",
+      "command": "node scripts/validate-specs.ts --json C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\traceability-audit.json",
+      "expected_exit": [
+        0,
+        2
+      ],
+      "exit_code": 2,
+      "ok": true,
+      "started_at": "2026-09-29T02:44:54.582Z",
+      "duration_ms": 739,
+      "evidence": [
+        "evidence/P00/traceability-audit.json"
+      ]
+    },
+    {
+      "rung": "fresh-environment reproduction",
+      "command": "node scripts/p00/fresh-env.ts --json C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\fresh-environment.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:44:55.322Z",
+      "duration_ms": 150817,
+      "evidence": [
+        "evidence/P00/fresh-environment.json"
+      ]
+    },
+    {
+      "rung": "performance baseline",
+      "command": "node --env-file-if-exists=.env scripts/p00/perf-baseline.ts --json C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\performance-baseline.json --bootstrap-ms 33477",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:47:26.163Z",
+      "duration_ms": 7937,
+      "evidence": [
+        "evidence/P00/performance-baseline.json"
+      ]
+    },
+    {
+      "rung": "security: committed secrets",
+      "command": "node scripts/check-secrets.ts",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "ok": true,
+      "started_at": "2026-09-29T02:47:34.102Z",
+      "duration_ms": 1032,
+      "evidence": [
+        "evidence/P00/security-secrets.txt"
+      ]
+    }
+  ],
+  "all_rungs_ok": true
+}

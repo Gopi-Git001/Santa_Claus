@@ -1,0 +1,6 @@
+# command: node scripts/generate-spec-docs.ts --check
+# started_at: 2026-09-29T02:43:17.889Z
+# exit_code: 0
+# duration_ms: 158
+
+generated docs up to date

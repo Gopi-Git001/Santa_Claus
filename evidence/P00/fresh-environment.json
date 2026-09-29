@@ -1,0 +1,180 @@
+{
+  "kind": "p00-fresh-environment",
+  "generated_at": "2026-09-29T02:47:26.127Z",
+  "source": {
+    "branch": "p00-foundation",
+    "commit": "1f25edc5e2da500941892b9498a79e6be7a0dd69",
+    "clone": "(deleted after run)"
+  },
+  "isolation": "separate clone, separate compose project 'harness-fresh', port 55433, new volume, generated credentials",
+  "note": "pnpm and uv reuse the machine's content-addressed package caches; dependencies are still installed from the frozen lockfiles.",
+  "bootstrap_ms": 33477,
+  "steps": [
+    {
+      "name": "clone",
+      "command": "git clone --quiet --no-hardlinks --branch p00-foundation C:\\Users\\Robbinson\\Documents\\Santa_Claus C:\\Users\\ROBBIN~1\\AppData\\Local\\Temp\\harness-fresh-EfO5xr\\repo",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 3086,
+      "ok": true,
+      "tail": ""
+    },
+    {
+      "name": "bootstrap",
+      "command": "node scripts/bootstrap.ts --db-port 55433 --compose-project harness-fresh",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 33477,
+      "ok": true,
+      "tail": " + pathspec==1.1.1\n + pluggy==1.6.0\n + pygments==2.21.0\n + pytest==9.1.1\n + ruff==0.16.9\n + typing-extensions==4.16.0"
+    },
+    {
+      "name": "typecheck",
+      "command": "corepack pnpm exec tsc --noEmit -p tsconfig.json",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 4932,
+      "ok": true,
+      "tail": ""
+    },
+    {
+      "name": "lint",
+      "command": "corepack pnpm exec biome check .",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 3886,
+      "ok": true,
+      "tail": "Checked 110 files in 1856ms. No fixes applied."
+    },
+    {
+      "name": "tests (unit, contract, integration, failure, e2e)",
+      "command": "corepack pnpm exec vitest run",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 46539,
+      "ok": true,
+      "tail": "   Duration  42.65s (tests 63%, import 33%, transform 4%, worker 1%)\n\n{\"ts\":\"2026-09-29T02:46:15.075Z\",\"level\":\"error\",\"msg\":\"smoke run failed\",\"component\":\"smoke-harness\",\"run_id\":\"run_re9dxk4rc3jxxddbpmsek8j0k7\",\"thread_id\":\"thr_nrjdq2n6amrkwaz1szd6mnyemv\",\"error\":{\"name\":\"HarnessError\",\"message\":\"smoke graph failed in node record_intent\",\"code\":\"NODE_FAILED\",\"details\":{\"node\":\"record_intent\",\"cause_code\":\"DB_DISCONNECTED\",\"thread_id\":\"thr_nrjdq2n6amrkwaz1szd6mnyemv\"},\"cause\":{\"name\":\"HarnessError\",\"message\":\"database connection lost\",\"code\":\"DB_DISCONNECTED\",\"details\":{\"driver_code\":\"57P01\"},\"cause\":{\"name\":\"error\",\"message\":\"terminating connection due to administrator command\",\"code\":\"57P01\"}}}}\n{\"ts\":\"2026-09-29T02:46:15.151Z\",\"level\":\"error\",\"msg\":\"smoke run failed\",\"component\":\"smoke-harness\",\"run_id\":\"run_k3b0p7wavzp2cfp0j3nk5d1dt5\",\"thread_id\":\"thr_5y62j845n6wx49e2z95d75ggfm\",\"error\":{\"name\":\"HarnessError\",\"message\":\"smoke graph failed\",\"code\":\"NODE_FAILED\",\"details\":{\"node\":null,\"cause_code\":\"DB_DISCONNECTED\",\"thread_id\":\"thr_5y62j845n6wx49e2z95d75ggfm\"},\"cause\":{\"name\":\"Error\",\"message\":\"Connection terminated unexpectedly\"}}}\n{\"ts\":\"2026-09-29T02:46:16.854Z\",\"level\":\"error\",\"msg\":\"smoke run failed\",\"component\":\"smoke-harness\",\"run_id\":\"run_hqs0nsaes9rvxt48sdecdrd4z1\",\"thread_id\":\"thr_qa3phpwk159qq4db8pwt3gd59c\",\"error\":{\"name\":\"HarnessError\",\"message\":\"smoke graph failed in node approval_gate\",\"code\":\"NODE_FAILED\",\"details\":{\"node\":\"approval_gate\",\"cause_code\":\"NODE_FAILED\",\"thread_id\":\"thr_qa3phpwk159qq4db8pwt3gd59c\"},\"cause\":{\"name\":\"HarnessError\",\"message\":\"forced failure in node approval_gate\",\"code\":\"NODE_FAILED\",\"details\":{\"node\":\"approval_gate\"}}}}\n{\"ts\":\"2026-09-29T02:46:24.269Z\",\"level\":\"error\",\"msg\":\"smoke run failed\",\"component\":\"smoke-harness\",\"run_id\":\"run_ga7228dg36ys8xxn597apzx83m\",\"thread_id\":\"thr_bejbpfv3rbdfjjh3masgvy477q\",\"error\":{\"name\":\"HarnessError\",\"message\":\"smoke graph failed in node finalize\",\"code\":\"NODE_FAILED\",\"details\":{\"node\":\"finalize\",\"cause_code\":\"NODE_FAILED\",\"thread_id\":\"thr_bejbpfv3rbdfjjh3masgvy477q\"},\"cause\":{\"name\":\"HarnessError\",\"message\":\"forced failure in node finalize\",\"code\":\"NODE_FAILED\",\"details\":{\"node\":\"finalize\"}}}}"
+    },
+    {
+      "name": "dependency boundaries",
+      "command": "node scripts/check-boundaries.ts",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 174,
+      "ok": true,
+      "tail": "{\"check\":\"dependency-boundaries\",\"violations\":0}"
+    },
+    {
+      "name": "schema drift",
+      "command": "node scripts/export-schemas.ts --check",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 437,
+      "ok": true,
+      "tail": "schemas OK (19 contracts)"
+    },
+    {
+      "name": "generated docs",
+      "command": "node scripts/generate-spec-docs.ts --check",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 150,
+      "ok": true,
+      "tail": "generated docs up to date"
+    },
+    {
+      "name": "committed secrets",
+      "command": "node scripts/check-secrets.ts",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 511,
+      "ok": true,
+      "tail": "{\"check\":\"committed-secrets\",\"files_scanned\":184,\"findings\":0}"
+    },
+    {
+      "name": "lockfiles",
+      "command": "node scripts/check-lockfiles.ts",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 1419,
+      "ok": true,
+      "tail": "{\"check\":\"lockfiles\",\"total\":67,\"failed\":0}"
+    },
+    {
+      "name": "python",
+      "command": "node scripts/python-check.ts",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 11507,
+      "ok": true,
+      "tail": "== python mypy: exit 0 (8567ms)\nSuccess: no issues found in 3 source files\r\n== python pytest: exit 0 (2008ms)\n....                                                                     [100%]\r\n4 passed in 0.10s\r\nChecked 14 packages in 4ms"
+    },
+    {
+      "name": "rust (fresh image + volumes)",
+      "command": "node scripts/rust-check.ts --fresh",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 32134,
+      "ok": true,
+      "tail": "    Checking harness-native v0.0.0 (/src/crates/harness-native)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.17s\n   Compiling harness-native v0.0.0 (/src/crates/harness-native)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.05s\n     Running unittests src/lib.rs (/cache/target/debug/deps/harness_native-eb44a29d58b62965)\n   Doc-tests harness_native"
+    },
+    {
+      "name": "langgraph smoke",
+      "command": "node --env-file=.env scripts/smoke.ts",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 5492,
+      "ok": true,
+      "tail": "{\"smoke\":\"OK\",\"scenarios\":[\"straight_through\",\"interrupt_resume\",\"forced_node_failure\"],\"failure\":null}\n{\"ts\":\"2026-09-29T02:47:19.315Z\",\"level\":\"error\",\"msg\":\"smoke run failed\",\"component\":\"smoke-harness\",\"run_id\":\"run_g6254emwyvx1kf4ye089z8fhjg\",\"thread_id\":\"thr_3gh4av8hkxdvrftejhj23h9879\",\"error\":{\"name\":\"HarnessError\",\"message\":\"smoke graph failed in node record_intent\",\"code\":\"NODE_FAILED\",\"details\":{\"node\":\"record_intent\",\"cause_code\":\"NODE_FAILED\",\"thread_id\":\"thr_3gh4av8hkxdvrftejhj23h9879\"},\"cause\":{\"name\":\"HarnessError\",\"message\":\"forced failure in node record_intent\",\"code\":\"NODE_FAILED\",\"details\":{\"node\":\"record_intent\"}}}}"
+    },
+    {
+      "name": "traceability audit (expected BLOCKED=2)",
+      "command": "node scripts/validate-specs.ts",
+      "expected_exit": [
+        2
+      ],
+      "exit_code": 2,
+      "duration_ms": 389,
+      "ok": true,
+      "tail": "domains       VALID    {\"count\":16}\ninvariants    VALID    {\"count\":20,\"enforced\":12,\"boundary\":7,\"deferred\":1}\nphases        BLOCKED  {\"count\":19}\ncapabilities  BLOCKED  {\"records\":0,\"expected\":168}\ntraceability: BLOCKED (0 error(s), 72 blocked item(s))"
+    },
+    {
+      "name": "teardown database (down -v)",
+      "command": "node scripts/dev-db.ts destroy",
+      "expected_exit": [
+        0
+      ],
+      "exit_code": 0,
+      "duration_ms": 1357,
+      "ok": true,
+      "tail": " Container harness-fresh-postgres-1 Removing \n Container harness-fresh-postgres-1 Removed \n Network harness-fresh_default Removing \n Volume harness-fresh_harness-pg Removing \n Volume harness-fresh_harness-pg Removed \n Network harness-fresh_default Removed"
+    }
+  ],
+  "ok": true
+}

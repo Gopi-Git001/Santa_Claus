@@ -1,0 +1,43 @@
+{
+  "uv": "uv 0.11.30 (4cb3d0366 2026-07-20 x86_64-pc-windows-msvc)",
+  "python": "Python 3.12.13",
+  "steps": [
+    {
+      "name": "sync",
+      "command": "uv sync --frozen --project C:\\Users\\Robbinson\\Documents\\Santa_Claus\\services\\python",
+      "exit_code": 0,
+      "duration_ms": 60
+    },
+    {
+      "name": "versions",
+      "command": "uv run --frozen --project C:\\Users\\Robbinson\\Documents\\Santa_Claus\\services\\python python --version",
+      "exit_code": 0,
+      "duration_ms": 406
+    },
+    {
+      "name": "ruff-lint",
+      "command": "uv run --frozen --project C:\\Users\\Robbinson\\Documents\\Santa_Claus\\services\\python ruff check C:\\Users\\Robbinson\\Documents\\Santa_Claus\\services\\python",
+      "exit_code": 0,
+      "duration_ms": 127
+    },
+    {
+      "name": "ruff-format",
+      "command": "uv run --frozen --project C:\\Users\\Robbinson\\Documents\\Santa_Claus\\services\\python ruff format --check C:\\Users\\Robbinson\\Documents\\Santa_Claus\\services\\python",
+      "exit_code": 0,
+      "duration_ms": 93
+    },
+    {
+      "name": "mypy",
+      "command": "uv run --frozen --project C:\\Users\\Robbinson\\Documents\\Santa_Claus\\services\\python mypy --config-file C:\\Users\\Robbinson\\Documents\\Santa_Claus\\services\\python\\pyproject.toml",
+      "exit_code": 0,
+      "duration_ms": 1528
+    },
+    {
+      "name": "pytest",
+      "command": "uv run --frozen --project C:\\Users\\Robbinson\\Documents\\Santa_Claus\\services\\python pytest C:\\Users\\Robbinson\\Documents\\Santa_Claus\\services\\python\\tests --junitxml=C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\python-tests.xml",
+      "exit_code": 0,
+      "duration_ms": 1598
+    }
+  ],
+  "ok": true
+}

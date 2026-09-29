@@ -1,0 +1,172 @@
+{
+  "kind": "p00-failure-scenarios",
+  "source": "evidence/P00/failure-tests.vitest.json",
+  "scenarios": [
+    {
+      "id": "F01",
+      "scenario": "invalid configuration",
+      "expected": "CONFIG_INVALID",
+      "observed": [
+        "CONFIG_INVALID"
+      ],
+      "test": "F01 invalid configuration fails clearly with CONFIG_INVALID",
+      "status": "passed",
+      "duration_ms": 3.586199999999735
+    },
+    {
+      "id": "F02",
+      "scenario": "PostgreSQL unavailable at startup",
+      "expected": "DB_UNAVAILABLE",
+      "observed": [
+        "DB_UNAVAILABLE"
+      ],
+      "test": "F02 PostgreSQL unavailable at startup gives DB_UNAVAILABLE without leaking credentials",
+      "status": "passed",
+      "duration_ms": 9.076399999999921
+    },
+    {
+      "id": "F03",
+      "scenario": "database disconnect during test workflow",
+      "expected": "DB_DISCONNECTED",
+      "observed": [
+        "DB_DISCONNECTED"
+      ],
+      "test": "F03 database disconnect during the test workflow is DB_DISCONNECTED; run outcome UNKNOWN (INV-012); system recovers",
+      "status": "passed",
+      "duration_ms": 788.5319
+    },
+    {
+      "id": "F04",
+      "scenario": "invalid/corrupted event payload",
+      "expected": "PAYLOAD_INVALID",
+      "observed": [
+        "PAYLOAD_INVALID"
+      ],
+      "test": "F04 invalid or corrupted event payloads are rejected as PAYLOAD_INVALID",
+      "status": "passed",
+      "duration_ms": 3.3575999999998203
+    },
+    {
+      "id": "F05",
+      "scenario": "duplicate capability ID",
+      "expected": "DUPLICATE_ID",
+      "observed": [
+        "DUPLICATE_ID"
+      ],
+      "test": "F05 duplicate capability ID is rejected as DUPLICATE_ID (registry and ledger)",
+      "status": "passed",
+      "duration_ms": 13.922700000000077
+    },
+    {
+      "id": "F06",
+      "scenario": "invalid capability dependency",
+      "expected": "INVALID_DEPENDENCY",
+      "observed": [
+        "INVALID_DEPENDENCY"
+      ],
+      "test": "F06 invalid capability dependency is reported as INVALID_DEPENDENCY",
+      "status": "passed",
+      "duration_ms": 2.1059000000000196
+    },
+    {
+      "id": "F07",
+      "scenario": "invalid phase reference",
+      "expected": "INVALID_PHASE_REF",
+      "observed": [
+        "INVALID_PHASE_REF"
+      ],
+      "test": "F07 invalid phase reference is reported as INVALID_PHASE_REF",
+      "status": "passed",
+      "duration_ms": 6.197700000000168
+    },
+    {
+      "id": "F08",
+      "scenario": "wrong thread ID on resume",
+      "expected": "THREAD_MISMATCH",
+      "observed": [
+        "THREAD_MISMATCH"
+      ],
+      "test": "F08 wrong thread ID on resume is THREAD_MISMATCH and leaves both threads untouched",
+      "status": "passed",
+      "duration_ms": 480.00849999999946
+    },
+    {
+      "id": "F09",
+      "scenario": "interrupted graph not resumed",
+      "expected": "INTERRUPTED (state retained)",
+      "observed": [
+        "INTERRUPTED"
+      ],
+      "test": "F09 an interrupted graph that is not resumed retains its interrupted state; resuming a finished one is rejected",
+      "status": "passed",
+      "duration_ms": 571.9885000000004
+    },
+    {
+      "id": "F10",
+      "scenario": "artifact hash mismatch",
+      "expected": "ARTIFACT_HASH_MISMATCH",
+      "observed": [
+        "ARTIFACT_HASH_MISMATCH"
+      ],
+      "test": "F10 artifact hash mismatch is detected as ARTIFACT_HASH_MISMATCH",
+      "status": "passed",
+      "duration_ms": 19.255199999999604
+    },
+    {
+      "id": "F11",
+      "scenario": "artifact storage unavailable",
+      "expected": "STORAGE_UNAVAILABLE",
+      "observed": [
+        "STORAGE_UNAVAILABLE"
+      ],
+      "test": "F11 artifact storage unavailable is STORAGE_UNAVAILABLE",
+      "status": "passed",
+      "duration_ms": 11.614999999999782
+    },
+    {
+      "id": "F12",
+      "scenario": "secret-like value passed to logger",
+      "expected": "REDACTED",
+      "observed": [
+        "REDACTED"
+      ],
+      "test": "F12 a secret-like value passed to the logger is REDACTED",
+      "status": "passed",
+      "duration_ms": 1.2690999999995256
+    },
+    {
+      "id": "F13",
+      "scenario": "unsupported schema version",
+      "expected": "UNSUPPORTED_SCHEMA_VERSION",
+      "observed": [
+        "UNSUPPORTED_SCHEMA_VERSION"
+      ],
+      "test": "F13 unsupported schema versions are UNSUPPORTED_SCHEMA_VERSION",
+      "status": "passed",
+      "duration_ms": 1.4754000000002634
+    },
+    {
+      "id": "F14",
+      "scenario": "forced node failure followed by controlled graph error",
+      "expected": "NODE_FAILED",
+      "observed": [
+        "NODE_FAILED"
+      ],
+      "test": "F14 a forced node failure becomes a controlled NODE_FAILED graph error with diagnostics",
+      "status": "passed",
+      "duration_ms": 135.8755000000001
+    },
+    {
+      "id": "F15",
+      "scenario": "process restart followed by persisted-state verification",
+      "expected": "INTERRUPTED (persisted)",
+      "observed": [
+        "INTERRUPTED"
+      ],
+      "test": "F15 process restart followed by persisted-state verification",
+      "status": "passed",
+      "duration_ms": 2067.0357000000004
+    }
+  ],
+  "all_passed": true
+}

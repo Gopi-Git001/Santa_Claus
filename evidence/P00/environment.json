@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-09-29T02:47:35.399Z",
+  "os": {
+    "type": "Windows_NT",
+    "platform": "win32",
+    "release": "10.0.19045",
+    "cpus": 4
+  },
+  "git": {
+    "branch": "p00-foundation",
+    "commit": "1f25edc5e2da500941892b9498a79e6be7a0dd69",
+    "dirty_files": 0,
+    "dirty_paths": []
+  },
+  "node": "v24.18.0",
+  "pnpm": "12.6.0",
+  "typescript": "Version 7.0.2",
+  "biome": "Version: 2.5.14",
+  "vitest": "vitest/5.0.2 win32-x64 node-v24.18.0",
+  "langgraph": {
+    "@langchain/langgraph": "1.4.18",
+    "@langchain/langgraph-checkpoint": "1.1.5",
+    "@langchain/langgraph-checkpoint-postgres": "1.0.5",
+    "@langchain/core": "1.2.13"
+  },
+  "postgresql": {
+    "server_version": "18.6 (Debian 18.6-1.pgdg13+2)",
+    "image": "postgres:18.6-trixie@sha256:5a5a84b19854a9ffaa54082c166ff4ec27473a361e496e5ea167f298f2da9722"
+  },
+  "docker": "29.6.2",
+  "python": {
+    "uv": "uv 0.11.30 (4cb3d0366 2026-07-20 x86_64-pc-windows-msvc)",
+    "interpreter": "Python 3.12.13"
+  },
+  "rust": {
+    "base_image": "rust:1.98.1-slim-trixie@sha256:4cd829461bd5c4d511c32e269da9cb8929223b666519d8004e35fc8d1d771ab7",
+    "image_id": "sha256:2536cbc584d70c371606128cf39118df4bf3f83e3203f71367983a0cae84571e",
+    "versions": [
+      "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "rustfmt 1.9.0-stable (48a229ceae 2026-09-01)",
+      "clippy 0.1.98 (48a229ceae 2026-09-01)"
+    ]
+  },
+  "remote_ci": "not run: branch not pushed (project-owner decision); CI jobs executed locally by this script"
+}

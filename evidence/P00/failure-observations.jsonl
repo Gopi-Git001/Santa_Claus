@@ -1,0 +1,15 @@
+{"id":"F01","observed":"CONFIG_INVALID"}
+{"id":"F02","observed":"DB_UNAVAILABLE"}
+{"id":"F03","observed":"DB_DISCONNECTED"}
+{"id":"F04","observed":"PAYLOAD_INVALID"}
+{"id":"F05","observed":"DUPLICATE_ID"}
+{"id":"F06","observed":"INVALID_DEPENDENCY"}
+{"id":"F07","observed":"INVALID_PHASE_REF"}
+{"id":"F08","observed":"THREAD_MISMATCH"}
+{"id":"F09","observed":"INTERRUPTED"}
+{"id":"F10","observed":"ARTIFACT_HASH_MISMATCH"}
+{"id":"F11","observed":"STORAGE_UNAVAILABLE"}
+{"id":"F12","observed":"REDACTED"}
+{"id":"F13","observed":"UNSUPPORTED_SCHEMA_VERSION"}
+{"id":"F14","observed":"NODE_FAILED"}
+{"id":"F15","observed":"INTERRUPTED"}

@@ -1,0 +1,6 @@
+# command: node --env-file-if-exists=.env scripts/db-migrate.ts
+# started_at: 2026-09-29T02:43:13.034Z
+# exit_code: 0
+# duration_ms: 650
+
+{"migrations":{"applied":[2],"already_applied":[1],"schema_version":2}}

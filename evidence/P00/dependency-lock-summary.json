@@ -1,0 +1,345 @@
+{
+  "lockfiles": {
+    "pnpm-lock.yaml": "ce63566be2781c2e4c0be76a32bb89e88d48b37002ebbfd24d187c36fb042f1e",
+    "services/python/uv.lock": "caeab32c815fbf60865d8b78bf31b56a50bbd07abf96567d094e1e5b6e9ca4c0",
+    "services/rust/Cargo.lock": "c83310ce9bdad4bbb39a102282bd5110643122431aad5977171eb0927ebc73ed"
+  },
+  "checks": [
+    {
+      "name": "present:pnpm-lock.yaml",
+      "ok": true,
+      "detail": "pnpm-lock.yaml"
+    },
+    {
+      "name": "present:services/python/uv.lock",
+      "ok": true,
+      "detail": "services/python/uv.lock"
+    },
+    {
+      "name": "present:services/rust/Cargo.lock",
+      "ok": true,
+      "detail": "services/rust/Cargo.lock"
+    },
+    {
+      "name": "present:.nvmrc",
+      "ok": true,
+      "detail": ".nvmrc"
+    },
+    {
+      "name": "present:services/python/.python-version",
+      "ok": true,
+      "detail": "services/python/.python-version"
+    },
+    {
+      "name": "present:services/rust/rust-toolchain.toml",
+      "ok": true,
+      "detail": "services/rust/rust-toolchain.toml"
+    },
+    {
+      "name": "pinned:packageManager",
+      "ok": true,
+      "detail": "pnpm@12.6.0"
+    },
+    {
+      "name": "exact:package.json:@biomejs/biome",
+      "ok": true,
+      "detail": "2.5.14"
+    },
+    {
+      "name": "exact:package.json:@harness/artifacts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/capabilities",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/config",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/events",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/kernel",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/models",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/observability",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/orchestration",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/persistence",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/policy",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/testing",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@harness/traceability",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:package.json:@types/node",
+      "ok": true,
+      "detail": "24.19.0"
+    },
+    {
+      "name": "exact:package.json:typescript",
+      "ok": true,
+      "detail": "7.0.2"
+    },
+    {
+      "name": "exact:package.json:vitest",
+      "ok": true,
+      "detail": "5.0.2"
+    },
+    {
+      "name": "exact:package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "exact:packages/artifacts/package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/artifacts/package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "exact:packages/capabilities/package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/capabilities/package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "exact:packages/config/package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/config/package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "exact:packages/contracts/package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "exact:packages/events/package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/events/package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "exact:packages/kernel/package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/kernel/package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "exact:packages/models/package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/models/package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "exact:packages/orchestration/package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/orchestration/package.json:@harness/events",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/orchestration/package.json:@harness/kernel",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/orchestration/package.json:@langchain/core",
+      "ok": true,
+      "detail": "1.2.13"
+    },
+    {
+      "name": "exact:packages/orchestration/package.json:@langchain/langgraph",
+      "ok": true,
+      "detail": "1.4.18"
+    },
+    {
+      "name": "exact:packages/orchestration/package.json:@langchain/langgraph-checkpoint",
+      "ok": true,
+      "detail": "1.1.5"
+    },
+    {
+      "name": "exact:packages/orchestration/package.json:@langchain/langgraph-checkpoint-postgres",
+      "ok": true,
+      "detail": "1.0.5"
+    },
+    {
+      "name": "exact:packages/orchestration/package.json:pg",
+      "ok": true,
+      "detail": "8.23.0"
+    },
+    {
+      "name": "exact:packages/orchestration/package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "exact:packages/orchestration/package.json:@types/pg",
+      "ok": true,
+      "detail": "8.23.1"
+    },
+    {
+      "name": "exact:packages/persistence/package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/persistence/package.json:@harness/events",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/persistence/package.json:pg",
+      "ok": true,
+      "detail": "8.23.0"
+    },
+    {
+      "name": "exact:packages/persistence/package.json:@types/pg",
+      "ok": true,
+      "detail": "8.23.1"
+    },
+    {
+      "name": "exact:packages/policy/package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:@harness/artifacts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:@harness/capabilities",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:@harness/config",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:@harness/contracts",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:@harness/events",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:@harness/kernel",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:@harness/models",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:@harness/observability",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:@harness/orchestration",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:@harness/persistence",
+      "ok": true,
+      "detail": "workspace:*"
+    },
+    {
+      "name": "exact:packages/testing/package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "exact:packages/traceability/package.json:zod",
+      "ok": true,
+      "detail": "4.6.5"
+    },
+    {
+      "name": "pnpm-lock consistent",
+      "ok": true,
+      "detail": "✓ Lockfile passes supply-chain policies (verified 1m ago) Done in 31ms using pnpm v12.6.0"
+    },
+    {
+      "name": "uv.lock consistent",
+      "ok": true,
+      "detail": "Resolved 14 packages in 1ms"
+    }
+  ],
+  "ok": true
+}
