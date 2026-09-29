@@ -32,6 +32,8 @@ export const ALLOWED: Record<string, { workspace: string[]; external: string[] }
       "@langchain/langgraph",
       "@langchain/langgraph-checkpoint",
       "@langchain/langgraph-checkpoint-postgres",
+      // Only to own the checkpoint pool's lifecycle and error handling (checkpoint-persistence.ts).
+      "pg",
     ],
   },
   testing: {

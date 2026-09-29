@@ -35,7 +35,7 @@ const SCAN_PATTERNS = [
   ...SECRET_VALUE_PATTERNS.filter((p) => p.name !== "key-value-assignment"),
   {
     name: "secret-literal-assignment",
-    pattern: /\b(password|passwd|secret|token|api[-_]?key)["']?\s*[=:]\s*["'][^"'\s$]{8,}["']/i,
+    pattern: /\b[A-Za-z0-9_]*?(password|passwd|secret|token|api[-_]?key)["']?\s*[=:]\s*["'][^"'\s$]{8,}["']/i,
   },
 ];
 
@@ -56,8 +56,10 @@ for (const file of files) {
   for (const { name, pattern } of SCAN_PATTERNS) {
     const re = new RegExp(pattern.source, pattern.flags.replace("g", ""));
     lines.forEach((l, i) => {
-      // `${...}` placeholders and REDACTED markers are templates, not secrets.
-      if (re.test(l) && !/\$\{[^}]+\}@|\[REDACTED\]/.test(l))
+      // Only the matched text itself is exempt when it is a template placeholder (`${...}`)
+      // or an already-redacted marker; a real secret elsewhere on the line is still reported.
+      const m = re.exec(l);
+      if (m !== null && !/\$\{[^}]+\}|\[REDACTED\]/.test(m[0]))
         findings.push({ file, pattern: name, line: i + 1 });
     });
   }

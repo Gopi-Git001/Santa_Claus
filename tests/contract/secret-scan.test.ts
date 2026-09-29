@@ -41,4 +41,24 @@ describe("committed-secret scan", () => {
     expect(r.out).toContain("secret-literal-assignment");
     expect(r.out).toContain("forbidden-file");
   });
+
+  it("catches keyword-suffixed keys and secrets sharing a line with a redaction marker", () => {
+    const pw = ["another", "secret", "value"].join("");
+    const r = scan({
+      "b.ts": [
+        `const HARNESS_DB_PASSWORD = "${pw}";`,
+        `const cfg = { clientSecret: "${pw}" };`,
+        `log("[REDACTED]"); const api_token = "${pw}";`,
+      ].join("\n"),
+    });
+    expect(r.status).toBe(1);
+    expect(r.out.match(/secret-literal-assignment/g)).toHaveLength(3);
+  });
+
+  it("does not flag ordinary code", () => {
+    const r = scan({
+      "c.ts": "const secret = { required: true, secret: false };\nconst max_tokens = 100;\n",
+    });
+    expect(r.status, r.out).toBe(0);
+  });
 });

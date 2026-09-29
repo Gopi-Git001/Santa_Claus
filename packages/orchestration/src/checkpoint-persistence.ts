@@ -2,6 +2,7 @@ import { HarnessError } from "@harness/contracts";
 import type { BaseCheckpointSaver } from "@langchain/langgraph";
 import { MemorySaver } from "@langchain/langgraph";
 import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
+import pg from "pg";
 
 /**
  * Harness-owned persistence boundary for graph checkpoints (P00 spec §15).
@@ -26,15 +27,63 @@ export function saverOf(p: CheckpointPersistence): BaseCheckpointSaver {
   return saver;
 }
 
+/**
+ * PostgresSaver (1.0.5) releases a client back to the pool with a plain
+ * `client.release()` even after its connection died mid-transaction, so the
+ * dead connection is reused and later checkpoint writes fail again. Every
+ * client handed out by our pool therefore tracks its own connection loss and
+ * is destroyed (release(true)) instead of recycled when that happened.
+ */
+function hardenReleasedClients(pool: pg.Pool): void {
+  type Callback = (
+    err: Error | undefined,
+    client?: pg.PoolClient,
+    done?: (release?: unknown) => void,
+  ) => void;
+  const connect = pool.connect.bind(pool) as (cb?: Callback) => Promise<pg.PoolClient> | undefined;
+  (pool as unknown as { connect: (cb?: Callback) => unknown }).connect = (cb?: Callback) => {
+    // Callback form is used internally by pool.query(), which already releases with the error.
+    if (cb !== undefined) return connect(cb);
+    return connectHardened();
+  };
+  const connectHardened = async () => {
+    const client = (await connect()) as pg.PoolClient;
+    let lost = false;
+    const markLost = () => {
+      lost = true;
+    };
+    client.on("error", markLost);
+    client.on("end", markLost);
+    const release = client.release.bind(client);
+    client.release = (err?: Error | boolean) => {
+      client.off("error", markLost);
+      client.off("end", markLost);
+      return release(err ?? (lost ? true : undefined));
+    };
+    return client;
+  };
+}
+
 /** Durable checkpoints in PostgreSQL. Creates the checkpoint schema/tables if needed. */
 export async function postgresCheckpointPersistence(options: {
   connectionString: string;
   schema: string;
+  poolMax?: number;
 }): Promise<CheckpointPersistence> {
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(options.schema)) {
     throw new HarnessError("CONFIG_INVALID", "invalid checkpoint schema name");
   }
-  const saver = PostgresSaver.fromConnString(options.connectionString, { schema: options.schema });
+  // The harness owns the checkpoint pool so it can attach an error listener: without one, an
+  // idle checkpoint connection dropping (server restart, network loss) emits an unhandled
+  // 'error' event and crashes the process. Query-time failures still reject normally.
+  const pool = new pg.Pool({
+    connectionString: options.connectionString,
+    max: options.poolMax ?? 5,
+    application_name: "harness-checkpoints",
+  });
+  pool.on("error", () => {});
+  hardenReleasedClients(pool);
+  const saver = new PostgresSaver(pool, undefined, { schema: options.schema });
   try {
     await saver.setup();
   } catch (error) {

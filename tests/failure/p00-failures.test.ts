@@ -20,7 +20,7 @@ import { createSmokeHarness, echoCapability, type SmokeHarness } from "@harness/
 import { type CapabilityRecord, validateLedger, validatePhases } from "@harness/traceability";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { testConfig } from "../support/env.ts";
-import { FAILURE_SCENARIOS } from "./scenarios.ts";
+import { FAILURE_SCENARIOS, observe } from "./scenarios.ts";
 
 // Real PostgreSQL throughout; failures here must never be skipped.
 let t: TestDatabase;
@@ -119,21 +119,64 @@ describe("P00 failure scenarios (§33)", () => {
     expect(await codeOf(createSmokeHarness({ config: cfg }))).toBe("DB_UNAVAILABLE");
   });
 
-  it("F03 database disconnect during the workflow is DB_DISCONNECTED and the thread still resumes afterwards", async () => {
-    const { identity } = await h.startRun({ goal: "F03", approval_required: true });
-    const code = await codeOf(
-      h.db.withTransaction(async (tx) => {
-        await tx.query("SELECT pg_terminate_backend(pg_backend_pid())");
-      }),
-    );
-    expect(code).toBe("DB_DISCONNECTED");
-    // Kill every other harness connection too, then prove recovery from durable state.
+  /*
+   * F03: a one-shot trigger kills the *inserting backend itself* at an exact point
+   * inside a running workflow (deterministic, no timing races). A sequence gates
+   * it because sequences are non-transactional, so the rollback caused by the
+   * kill cannot re-arm the trigger.
+   */
+  async function armKillSwitch(table: string, condition: string): Promise<string> {
+    const tag = `f03_${Math.random().toString(36).slice(2, 8)}`;
+    await t.db.query(`CREATE SEQUENCE ${tag}_seq`);
+    await t.db.query(`CREATE FUNCTION ${tag}_fn() RETURNS trigger LANGUAGE plpgsql AS $$
+      BEGIN
+        IF ${condition} THEN
+          IF nextval('${tag}_seq') = 1 THEN PERFORM pg_terminate_backend(pg_backend_pid()); END IF;
+        END IF;
+        RETURN NEW;
+      END $$`);
     await t.db.query(
-      "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid() AND application_name = 'harness-smoke'",
+      `CREATE TRIGGER ${tag}_trg BEFORE INSERT ON ${table} FOR EACH ROW EXECUTE FUNCTION ${tag}_fn()`,
     );
-    const out = await h.resumeRun(identity, { decision: "approve", responder: "f03" });
-    expect(out.kind).toBe("completed");
-    expect((await pgRepositories(t.db).runs.get(identity.run_id))?.status).toBe("COMPLETED");
+    return tag;
+  }
+
+  it("F03 database disconnect during the test workflow is DB_DISCONNECTED; run outcome UNKNOWN (INV-012); system recovers", async () => {
+    // (a) connection lost while a graph node writes its event (system-of-record connection).
+    await armKillSwitch(
+      "harness_events",
+      "NEW.event_type = 'graph.node_started' AND NEW.envelope->'payload'->>'node' = 'record_intent'",
+    );
+    const eventWrite = await h.startRun({ goal: "F03-a", approval_required: false }).catch((e: unknown) => e);
+    expect(eventWrite).toMatchObject({
+      code: "NODE_FAILED",
+      details: { node: "record_intent", cause_code: "DB_DISCONNECTED" },
+    });
+    observe("F03", String((eventWrite as HarnessError).details["cause_code"]));
+
+    // (b) connection lost while LangGraph writes a checkpoint (checkpoint-store connection).
+    await armKillSwitch("harness_checkpoints.checkpoints", "TRUE");
+    const checkpointWrite = await h
+      .startRun({ goal: "F03-b", approval_required: false })
+      .catch((e: unknown) => e);
+    expect(checkpointWrite).toMatchObject({
+      code: "NODE_FAILED",
+      details: { cause_code: "DB_DISCONNECTED" },
+    });
+
+    // Both runs are UNKNOWN, never silently FAILED, and the loss is recorded.
+    const runs = await t.db.query<{ root_goal: string; status: string }>(
+      "SELECT root_goal, status FROM harness_runs WHERE root_goal IN ('F03-a', 'F03-b') ORDER BY root_goal",
+    );
+    expect(runs.rows).toEqual([
+      { root_goal: "F03-a", status: "UNKNOWN" },
+      { root_goal: "F03-b", status: "UNKNOWN" },
+    ]);
+
+    // Recovery: the kill switches are spent; new work and a pending interrupt proceed normally.
+    const fresh = await h.startRun({ goal: "F03-after", approval_required: true });
+    const done = await h.resumeRun(fresh.identity, { decision: "approve", responder: "f03" });
+    expect(done.kind).toBe("completed");
   });
 
   it("F04 invalid or corrupted event payloads are rejected as PAYLOAD_INVALID", async () => {

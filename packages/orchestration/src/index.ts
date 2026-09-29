@@ -5,7 +5,12 @@ export {
   postgresCheckpointPersistence,
 } from "./checkpoint-persistence.ts";
 export { RunEventEmitter } from "./event-emitter.ts";
-export { LangGraphSmokeWorkflow, type SmokeWorkflowDeps, type StreamObservation } from "./smoke/runtime.ts";
+export {
+  classifyExecutionError,
+  LangGraphSmokeWorkflow,
+  type SmokeWorkflowDeps,
+  type StreamObservation,
+} from "./smoke/runtime.ts";
 export {
   type HumanResponse,
   HumanResponseSchema,

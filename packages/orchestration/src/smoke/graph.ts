@@ -37,9 +37,10 @@ export interface NodeHooks {
 
 function instrument(node: SmokeNode, hooks: NodeHooks, fn: (s: SmokeStateValues) => Update) {
   return async (state: SmokeStateValues): Promise<Update> => {
-    await hooks.started(node);
     const started = performance.now();
     try {
+      // Inside the try: a failure while recording the node's own start event is attributed to the node.
+      await hooks.started(node);
       if (state.fail_at_node === node) {
         throw new HarnessError("NODE_FAILED", `forced failure in node ${node}`, { details: { node } });
       }

@@ -1,4 +1,10 @@
-import { HarnessError, isHarnessError, type JsonObject, type ThreadId } from "@harness/contracts";
+import {
+  HarnessError,
+  type HarnessErrorCode,
+  isHarnessError,
+  type JsonObject,
+  type ThreadId,
+} from "@harness/contracts";
 import type { EventLog } from "@harness/events";
 import type {
   PendingInterrupt,
@@ -37,6 +43,30 @@ export interface SmokeWorkflowDeps {
 }
 
 const graphRef = { graph: SMOKE_GRAPH_NAME, graph_version: SMOKE_GRAPH_VERSION };
+
+const CONNECTION_LOST_SQLSTATE = /^(57P0[123]|08\d{3})$/;
+const CONNECTION_LOST_MESSAGE =
+  /connection terminated|terminating connection|client has encountered a connection error|not queryable/i;
+
+/**
+ * Classify an error escaping graph execution. Harness errors keep their code.
+ * Raw driver errors from the checkpoint store that mean the connection was
+ * lost become DB_DISCONNECTED, so the run is recorded as UNKNOWN rather than
+ * FAILED (INV-012); anything else is a node failure.
+ */
+export function classifyExecutionError(error: unknown): HarnessErrorCode {
+  if (isHarnessError(error)) return error.code;
+  const code = (error as { code?: unknown } | null)?.code;
+  const message = error instanceof Error ? error.message : "";
+  if (
+    (typeof code === "string" &&
+      (CONNECTION_LOST_SQLSTATE.test(code) || code === "ECONNRESET" || code === "EPIPE")) ||
+    CONNECTION_LOST_MESSAGE.test(message)
+  ) {
+    return "DB_DISCONNECTED";
+  }
+  return "NODE_FAILED";
+}
 
 /**
  * LangGraph implementation of the harness WorkflowRuntime port for the P00
@@ -136,19 +166,28 @@ export class LangGraphSmokeWorkflow implements WorkflowRuntime<SmokeInput, Human
       const stream = await graph.stream(input as never, {
         ...this.#config(identity.thread_id),
         streamMode: "updates",
+        // Each step's checkpoint is durably written before the next step starts. The
+        // default ("async") fires checkpoint writes in the background, and a write that
+        // fails mid-run is an unhandled rejection until the run ends (observed in F03).
+        durability: "sync",
       });
       for await (const chunk of stream) {
         this.#deps.onStream?.({ mode: "updates", nodes: Object.keys(chunk as object) });
       }
     } catch (error) {
-      const code = isHarnessError(error) ? error.code : "NODE_FAILED";
+      const code = classifyExecutionError(error);
       const message = error instanceof Error ? error.message : String(error);
-      await emitter.emit("graph.failed", {
-        ...graphRef,
-        ...(failed.node === undefined ? {} : { node: failed.node }),
-        error_code: code,
-        message,
-      });
+      try {
+        await emitter.emit("graph.failed", {
+          ...graphRef,
+          ...(failed.node === undefined ? {} : { node: failed.node }),
+          error_code: code,
+          message,
+        });
+      } catch {
+        // The failure event could not be recorded (e.g. database still unreachable); the
+        // classified error below still reaches the caller, which records the run outcome.
+      }
       throw new HarnessError(
         "NODE_FAILED",
         `smoke graph failed${failed.node ? ` in node ${failed.node}` : ""}`,

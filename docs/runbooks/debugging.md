@@ -37,7 +37,7 @@ SELECT count(*) FROM harness_checkpoints.checkpoints WHERE thread_id = 'thr_…'
 From code: `workflow.inspect(threadId)` returns the checkpointed state, the next
 nodes, and any pending interrupt.
 
-Connect with the dockerised client (password from your `.env`):
+Connect with the client inside the container (local socket; no password prompt):
 `docker exec -it harness-dev-postgres-1 psql -U harness -d harness_dev`.
 
 ## Error classification quick reference

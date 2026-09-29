@@ -2,7 +2,12 @@ import { newId, newTraceId, type ThreadId } from "@harness/contracts";
 import { InMemoryEventLog } from "@harness/events";
 import type { ThreadBinding, ThreadRegistry, WorkflowIdentity } from "@harness/kernel";
 import { describe, expect, it } from "vitest";
-import { LangGraphSmokeWorkflow, memoryCheckpointPersistence, type StreamObservation } from "../src/index.ts";
+import {
+  classifyExecutionError,
+  LangGraphSmokeWorkflow,
+  memoryCheckpointPersistence,
+  type StreamObservation,
+} from "../src/index.ts";
 
 /*
  * Unit tests of graph logic with the in-memory saver. These are NOT evidence of
@@ -37,6 +42,18 @@ function setup() {
   });
   return { events, observations, wf, identity };
 }
+
+describe("classifyExecutionError", () => {
+  it("maps raw connection-loss driver errors to DB_DISCONNECTED and other errors to NODE_FAILED", () => {
+    expect(classifyExecutionError(Object.assign(new Error("x"), { code: "57P01" }))).toBe("DB_DISCONNECTED");
+    expect(classifyExecutionError(Object.assign(new Error("x"), { code: "ECONNRESET" }))).toBe(
+      "DB_DISCONNECTED",
+    );
+    expect(classifyExecutionError(new Error("Connection terminated unexpectedly"))).toBe("DB_DISCONNECTED");
+    expect(classifyExecutionError(new Error("some bug"))).toBe("NODE_FAILED");
+    expect(classifyExecutionError(Object.assign(new Error("x"), { code: "23505" }))).toBe("NODE_FAILED");
+  });
+});
 
 describe("smoke graph (unit, in-memory saver)", () => {
   it("runs deterministic nodes to completion without approval", async () => {

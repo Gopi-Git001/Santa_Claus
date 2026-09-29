@@ -34,8 +34,11 @@ export const SECRET_VALUE_PATTERNS: ReadonlyArray<{ name: string; pattern: RegEx
   { name: "slack-token", pattern: /\bxox[abposr]-[A-Za-z0-9-]{10,}\b/g, replace: REDACTED },
   { name: "provider-api-key", pattern: /\bsk-(ant-|proj-)?[A-Za-z0-9_-]{20,}\b/g, replace: REDACTED },
   {
+    // Keyword anywhere in an identifier (DB_PASSWORD, client_secret, dbPassword, "api_key" in JSON),
+    // immediately followed by an optional quote and = or :.
     name: "key-value-assignment",
-    pattern: /\b((?:password|passwd|secret|token|api[-_]?key)\s*[=:]\s*)("[^"]*"|'[^']*'|[^\s,;&]+)/gi,
+    pattern:
+      /(\b[A-Za-z0-9_]*?(?:password|passwd|secret|token|api[-_]?key)["']?\s*[=:]\s*)("[^"]*"|'[^']*'|[^\s,;&}]+)/gi,
     replace: `$1${REDACTED}`,
   },
 ];
@@ -46,27 +49,38 @@ export function redactString(value: string): string {
   return out;
 }
 
-/** Deep-redact any value into a JSON-safe structure. Handles cycles and errors. */
-export function redact(value: unknown, seen: WeakSet<object> = new WeakSet()): unknown {
+/**
+ * Deep-redact any value into a JSON-safe structure. Handles cycles (only true
+ * ancestors are reported as circular; shared references are rendered) and errors
+ * (name, message, code, details and cause, all redacted).
+ */
+export function redact(value: unknown, ancestors: Set<object> = new Set()): unknown {
   if (typeof value === "string") return redactString(value);
   if (value === null || typeof value !== "object") {
     return typeof value === "bigint" ? value.toString() : value;
   }
-  if (seen.has(value)) return "[Circular]";
-  seen.add(value);
-  // Objects with their own safe serialisation (e.g. SecretString) are trusted to redact themselves.
-  const toJSON = (value as { toJSON?: unknown }).toJSON;
-  if (typeof toJSON === "function" && !(value instanceof Date)) return redact(toJSON.call(value), seen);
-  if (value instanceof Date) return value.toISOString();
-  if (value instanceof Error) {
-    const err: Record<string, unknown> = { name: value.name, message: redactString(value.message) };
-    const code = (value as { code?: unknown }).code;
-    if (code !== undefined) err["code"] = code;
-    if (value.cause !== undefined) err["cause"] = redact(value.cause, seen);
-    return err;
+  if (ancestors.has(value)) return "[Circular]";
+  ancestors.add(value);
+  try {
+    // Objects with their own safe serialisation (e.g. SecretString) are trusted to redact themselves.
+    const toJSON = (value as { toJSON?: unknown }).toJSON;
+    if (typeof toJSON === "function" && !(value instanceof Date))
+      return redact(toJSON.call(value), ancestors);
+    if (value instanceof Date) return value.toISOString();
+    if (value instanceof Error) {
+      const err: Record<string, unknown> = { name: value.name, message: redactString(value.message) };
+      const { code, details } = value as { code?: unknown; details?: unknown };
+      if (code !== undefined) err["code"] = code;
+      if (details !== undefined) err["details"] = redact(details, ancestors);
+      if (value.cause !== undefined) err["cause"] = redact(value.cause, ancestors);
+      return err;
+    }
+    if (Array.isArray(value)) return value.map((v) => redact(v, ancestors));
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value))
+      out[k] = SENSITIVE_KEY.test(k) ? REDACTED : redact(v, ancestors);
+    return out;
+  } finally {
+    ancestors.delete(value);
   }
-  if (Array.isArray(value)) return value.map((v) => redact(v, seen));
-  const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(value)) out[k] = SENSITIVE_KEY.test(k) ? REDACTED : redact(v, seen);
-  return out;
 }

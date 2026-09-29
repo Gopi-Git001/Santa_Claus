@@ -35,6 +35,20 @@ describe("redactString", () => {
     expect(out).toContain(REDACTED);
   });
 
+  it.each([
+    ["prefixed env name", `HARNESS_DB_PASSWORD=${FIXTURE.urlPassword}`],
+    ["snake_case key", `client_secret=${FIXTURE.urlPassword}`],
+    ["camelCase key", `dbPassword: ${FIXTURE.urlPassword}`],
+    ["JSON in a string", `{"api_key":"${FIXTURE.urlPassword}"}`],
+    ["upper-case token", `API_TOKEN: "${FIXTURE.urlPassword}"`],
+  ])("masks keyword-suffixed keys: %s", (_name, input) => {
+    expect(redactString(input)).not.toContain(FIXTURE.urlPassword);
+  });
+
+  it("does not mask ordinary token counts", () => {
+    expect(redactString("input_tokens: 42, max_tokens=100")).toBe("input_tokens: 42, max_tokens=100");
+  });
+
   it("keeps non-secret context readable", () => {
     expect(redactString(`postgres://harness:${FIXTURE.urlPassword}@localhost:5432/db`)).toBe(
       `postgres://harness:${REDACTED}@localhost:5432/db`,
@@ -65,6 +79,16 @@ describe("redact (structured)", () => {
     expect(text).not.toContain(FIXTURE.urlPassword);
     expect(text).not.toContain(FIXTURE.bearer);
     expect(text).toContain("[Circular]");
+  });
+
+  it("renders shared (non-circular) references instead of marking them circular", () => {
+    const shared = { n: 1 };
+    expect(redact({ a: shared, b: [shared, shared] })).toEqual({ a: { n: 1 }, b: [{ n: 1 }, { n: 1 }] });
+  });
+
+  it("keeps error details, redacted", () => {
+    const err = Object.assign(new Error("x"), { code: "NODE_FAILED", details: { node: "n", password: "p" } });
+    expect(redact(err)).toMatchObject({ code: "NODE_FAILED", details: { node: "n", password: REDACTED } });
   });
 
   it("honours objects that serialise themselves (SecretString-style)", () => {

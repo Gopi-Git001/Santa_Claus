@@ -1,3 +1,16 @@
+import { appendFileSync } from "node:fs";
+
+/**
+ * Record the error classification a failure test actually observed. When the
+ * acceptance runner sets HARNESS_FAILURE_OBSERVATIONS, each observation is
+ * appended as a JSON line so evidence carries expected vs. observed codes.
+ */
+export function observe(id: string, observed: string): string {
+  const out = process.env["HARNESS_FAILURE_OBSERVATIONS"];
+  if (out) appendFileSync(out, `${JSON.stringify({ id, observed })}\n`);
+  return observed;
+}
+
 /**
  * P00 failure scenarios (P00 spec §33) with their expected error
  * classification. Test titles start with the scenario ID so the acceptance

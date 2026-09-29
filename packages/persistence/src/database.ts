@@ -1,5 +1,5 @@
 import pg from "pg";
-import { classifyDbError } from "./errors.ts";
+import { classifyDbError, isDriverError } from "./errors.ts";
 
 export interface DatabaseOptions {
   /** Connection URL. Callers holding a SecretString pass `secret.reveal()` here and nowhere else. */
@@ -107,7 +107,9 @@ export class Database implements Queryable {
       } catch {
         broken = true;
       }
-      throw classifyDbError(error, "query");
+      // Caller exceptions (logic errors, HarnessErrors) propagate unchanged; only driver
+      // errors are classified, so a bug is never mislabelled as an unknown DB outcome.
+      throw isDriverError(error) ? classifyDbError(error, "query") : error;
     } finally {
       client.off("error", onError);
       client.release(broken ? true : undefined);

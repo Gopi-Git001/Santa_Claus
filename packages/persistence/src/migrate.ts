@@ -46,8 +46,9 @@ export interface MigrationReport {
 }
 
 /**
- * Apply pending migrations, each in its own transaction, under an advisory lock.
- * Refuses to run if an already-applied migration was modified.
+ * Apply all pending migrations in ONE transaction under an advisory lock, so a
+ * failing migration leaves the schema exactly as it was. Refuses to run if an
+ * already-applied migration was modified.
  */
 export async function migrate(
   db: Database,

@@ -102,6 +102,34 @@ describe("LangGraph.js smoke graph on PostgreSQL", () => {
     expect(doneB.state["outcome"]).toBe("denied_by_human");
   });
 
+  it("rejects an invalid human response without changing run state or appending events", async () => {
+    const { identity } = await h.startRun({ goal: "invalid response", approval_required: true });
+    const repos = pgRepositories(t.db);
+    const before = (await repos.events.listByRun(identity.run_id)).length;
+    for (const bad of [{ decision: "maybe", responder: "x" }, null, { decision: "approve" }]) {
+      await expect(h.resumeRun(identity, bad as never)).rejects.toMatchObject({ code: "PAYLOAD_INVALID" });
+    }
+    expect((await repos.runs.get(identity.run_id))?.status).toBe("INTERRUPTED");
+    expect((await repos.events.listByRun(identity.run_id)).length).toBe(before);
+    // Still resumable with a valid response.
+    expect((await h.resumeRun(identity, { decision: "approve", responder: "x" })).kind).toBe("completed");
+  });
+
+  it("lets exactly one of two concurrent resumes win", async () => {
+    const { identity } = await h.startRun({ goal: "concurrent resume", approval_required: true });
+    const results = await Promise.allSettled([
+      h.resumeRun(identity, { decision: "approve", responder: "a" }),
+      h.resumeRun(identity, { decision: "deny", responder: "b" }),
+    ]);
+    expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
+    const loser = results.find((r) => r.status === "rejected") as PromiseRejectedResult;
+    expect(loser.reason).toMatchObject({ code: "GRAPH_NOT_INTERRUPTED" });
+    const events = await pgRepositories(t.db).events.listByRun(identity.run_id);
+    expect(events.filter((e) => e.event_type === "graph.resumed")).toHaveLength(1);
+    expect(events.filter((e) => e.event_type === "artifact.created")).toHaveLength(1);
+    expect((await pgRepositories(t.db).runs.get(identity.run_id))?.status).toBe("COMPLETED");
+  });
+
   it("rejects resuming a thread that has no pending interrupt", async () => {
     const { identity } = await h.startRun({ goal: "no interrupt", approval_required: false });
     await expect(h.resumeRun(identity, { decision: "approve", responder: "x" })).rejects.toMatchObject({

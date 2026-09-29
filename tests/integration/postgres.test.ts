@@ -72,16 +72,33 @@ describe("database foundation", () => {
     await expect(migrate(t.db, tampered)).rejects.toMatchObject({ code: "INVALID_REFERENCE" });
   });
 
-  it("rolls back a failed transaction completely", async () => {
+  it("rolls back a failed transaction completely and propagates caller errors unchanged", async () => {
+    // Corrected in review: this test previously asserted that a caller's own Error was re-labelled
+    // as a HarnessError (UNKNOWN_OUTCOME), which mislabelled logic bugs as database outcomes.
     const repos = pgRepositories(t.db);
     const run = newRun();
+    const boom = new Error("boom");
     await expect(
       t.db.withTransaction(async (tx) => {
         await pgRepositories(tx).runs.create(run);
-        throw new Error("boom");
+        throw boom;
       }),
-    ).rejects.toBeInstanceOf(HarnessError);
+    ).rejects.toBe(boom);
     expect(await repos.runs.get(run.id)).toBeUndefined();
+  });
+
+  it("classifies driver errors inside a transaction and keeps query-phase SQL errors out of DB_UNAVAILABLE", async () => {
+    const run = newRun();
+    await pgRepositories(t.db).runs.create(run);
+    await expect(
+      t.db.withTransaction(async (tx) => {
+        await pgRepositories(tx).runs.create(run);
+      }),
+    ).rejects.toMatchObject({ code: "DUPLICATE_ID" });
+    const missingTable = await t.db.query("SELECT * FROM no_such_table").catch((e: unknown) => e);
+    expect(missingTable).toBeInstanceOf(HarnessError);
+    expect((missingTable as HarnessError).code).not.toBe("DB_UNAVAILABLE");
+    expect((missingTable as HarnessError).details["driver_code"]).toBe("42P01");
   });
 });
 
@@ -149,10 +166,19 @@ describe("system-of-record repositories", () => {
       },
     );
     await events.append(e);
-    await t.db.query(
-      `UPDATE harness_events SET envelope = jsonb_set(envelope, '{payload,graph}', '42'::jsonb) WHERE event_id = $1`,
-      [e.event_id],
-    );
+    const tamper = `UPDATE harness_events SET envelope = jsonb_set(envelope, '{payload,graph}', '42'::jsonb) WHERE event_id = $1`;
+    // Normal operation cannot modify recorded events (append-only, migration 0002)...
+    const refused = await t.db.query(tamper, [e.event_id]).catch((err: unknown) => err);
+    expect((refused as HarnessError).details["driver_code"]).toBe("23001");
+    await expect(
+      t.db.query("DELETE FROM harness_events WHERE event_id = $1", [e.event_id]),
+    ).rejects.toBeInstanceOf(HarnessError);
+    // ...so simulate a privileged tamper that bypasses the trigger; the read path must still catch it.
+    await t.db.withTransaction(async (tx) => {
+      await tx.query("ALTER TABLE harness_events DISABLE TRIGGER harness_events_no_update_delete");
+      await tx.query(tamper, [e.event_id]);
+      await tx.query("ALTER TABLE harness_events ENABLE TRIGGER harness_events_no_update_delete");
+    });
     await expect(events.listByRun(run.id)).rejects.toMatchObject({ code: "PAYLOAD_INVALID" });
   });
 

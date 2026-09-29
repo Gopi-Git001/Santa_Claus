@@ -15,6 +15,7 @@ import { createLogger, type Logger } from "@harness/observability";
 import {
   type CheckpointPersistence,
   type HumanResponse,
+  HumanResponseSchema,
   LangGraphSmokeWorkflow,
   postgresCheckpointPersistence,
   type SmokeInput,
@@ -42,6 +43,21 @@ export interface SmokeHarnessOptions {
   databaseUrl?: string;
   logger?: Logger;
 }
+
+/**
+ * Legal run status transitions for the P00 smoke lifecycle. Terminal states
+ * (COMPLETED, FAILED, CANCELLED, UNKNOWN) have no exits; the full run state
+ * machine is owned by the P01 kernel.
+ */
+const LEGAL_RUN_TRANSITIONS: Record<RunStatus, RunStatus[]> = {
+  CREATED: ["RUNNING", "CANCELLED"],
+  RUNNING: ["INTERRUPTED", "COMPLETED", "FAILED", "UNKNOWN", "CANCELLED"],
+  INTERRUPTED: ["RUNNING", "CANCELLED"],
+  COMPLETED: [],
+  FAILED: [],
+  CANCELLED: [],
+  UNKNOWN: [],
+};
 
 /** Append an event chained to the run's latest event, inside the caller's transaction. */
 async function appendChained<T extends EventType>(
@@ -100,18 +116,26 @@ export async function createSmokeHarness(options: SmokeHarnessOptions): Promise<
     onStream: (o) => observations.push(o),
   });
 
-  const transition = async (identity: WorkflowIdentity, to: RunStatus, reason: string) => {
-    await db.withTransaction(async (tx) => {
-      const runs = pgRepositories(tx).runs;
-      const run = await runs.get(identity.run_id);
-      if (run === undefined) throw new HarnessError("INVALID_REFERENCE", "run not found");
-      if (run.status === to) return;
-      if (!(await runs.transition(identity.run_id, run.status, to, new Date()))) {
-        throw new HarnessError("UNKNOWN_OUTCOME", "concurrent run status change");
-      }
-      await appendChained(tx, identity, "run.status_changed", { from: run.status, to, reason });
+  /**
+   * Compare-and-set run status change along the legal P00 run state machine.
+   * Returns false (and changes nothing) if the run is not currently in `from`.
+   */
+  const transition = async (
+    identity: WorkflowIdentity,
+    from: RunStatus,
+    to: RunStatus,
+    reason: string,
+  ): Promise<boolean> => {
+    if (!LEGAL_RUN_TRANSITIONS[from].includes(to)) {
+      throw new HarnessError("INVALID_REFERENCE", `illegal run transition ${from} -> ${to}`);
+    }
+    const changed = await db.withTransaction(async (tx) => {
+      if (!(await pgRepositories(tx).runs.transition(identity.run_id, from, to, new Date()))) return false;
+      await appendChained(tx, identity, "run.status_changed", { from, to, reason });
+      return true;
     });
-    log.info("run status changed", { run_id: identity.run_id, to, reason });
+    if (changed) log.info("run status changed", { run_id: identity.run_id, from, to, reason });
+    return changed;
   };
 
   const recordFinalArtifact = async (
@@ -136,14 +160,27 @@ export async function createSmokeHarness(options: SmokeHarnessOptions): Promise<
     return record;
   };
 
+  const mustTransition = async (
+    identity: WorkflowIdentity,
+    from: RunStatus,
+    to: RunStatus,
+    reason: string,
+  ) => {
+    if (!(await transition(identity, from, to, reason))) {
+      throw new HarnessError("UNKNOWN_OUTCOME", `run was not ${from} when moving to ${to}`, {
+        details: { run_id: identity.run_id },
+      });
+    }
+  };
+
   const settle = async (identity: WorkflowIdentity, execute: () => Promise<WorkflowOutcome>) => {
     try {
       const outcome = await execute();
       if (outcome.kind === "interrupted") {
-        await transition(identity, "INTERRUPTED", "awaiting human response");
+        await mustTransition(identity, "RUNNING", "INTERRUPTED", "awaiting human response");
       } else {
         await recordFinalArtifact(identity, outcome);
-        await transition(identity, "COMPLETED", String(outcome.state["outcome"]));
+        await mustTransition(identity, "RUNNING", "COMPLETED", String(outcome.state["outcome"]));
       }
       return outcome;
     } catch (error) {
@@ -151,7 +188,7 @@ export async function createSmokeHarness(options: SmokeHarnessOptions): Promise<
       const cause = isHarnessError(error) ? (error.details["cause_code"] ?? error.code) : "error";
       const status: RunStatus =
         cause === "DB_DISCONNECTED" || cause === "UNKNOWN_OUTCOME" ? "UNKNOWN" : "FAILED";
-      await transition(identity, status, String(cause)).catch((e: unknown) =>
+      await transition(identity, "RUNNING", status, String(cause)).catch((e: unknown) =>
         log.error("could not record run failure", { run_id: identity.run_id, error: e }),
       );
       log.error("smoke run failed", { run_id: identity.run_id, thread_id: identity.thread_id, error });
@@ -190,21 +227,33 @@ export async function createSmokeHarness(options: SmokeHarnessOptions): Promise<
           budget_profile: run.budget_profile,
         });
       });
-      await transition(identity, "RUNNING", "smoke start");
+      await mustTransition(identity, "CREATED", "RUNNING", "smoke start");
       log.info("smoke run started", { run_id: identity.run_id, thread_id: identity.thread_id });
       const outcome = await settle(identity, () => workflow.start(identity, input));
       return { identity, outcome };
     },
     async resumeRun(identity, response) {
-      // Rejections (unknown/mismatched thread, nothing pending) must not change run state.
+      // Every rejection happens before any state change: unknown/mismatched thread and
+      // nothing-pending are classified by the workflow itself; an invalid response is
+      // rejected here; and only one caller can win the INTERRUPTED -> RUNNING transition.
       const binding = await repos.threads.get(identity.thread_id);
       const snapshot = await workflow.inspect(identity.thread_id);
       if (binding?.run_id !== identity.run_id || snapshot?.pending_interrupt == null) {
         return workflow.resume(identity, response);
       }
-      await transition(identity, "RUNNING", "resume with human response");
-      log.info("smoke run resumed", { run_id: identity.run_id, decision: response.decision });
-      return settle(identity, () => workflow.resume(identity, response));
+      const parsed = HumanResponseSchema.safeParse(response);
+      if (!parsed.success) {
+        throw new HarnessError("PAYLOAD_INVALID", "invalid human response", {
+          details: { issues: parsed.error.issues.map((i) => i.message) },
+        });
+      }
+      if (!(await transition(identity, "INTERRUPTED", "RUNNING", "resume with human response"))) {
+        throw new HarnessError("GRAPH_NOT_INTERRUPTED", "run is not awaiting a human response", {
+          details: { run_id: identity.run_id },
+        });
+      }
+      log.info("smoke run resumed", { run_id: identity.run_id, decision: parsed.data.decision });
+      return settle(identity, () => workflow.resume(identity, parsed.data));
     },
     async close() {
       await persistence.close().catch(() => {});
