@@ -1,7 +1,7 @@
 {
   "base_image": "rust:1.98.1-slim-trixie@sha256:4cd829461bd5c4d511c32e269da9cb8929223b666519d8004e35fc8d1d771ab7",
   "image": "harness-rust-ci:1.98.1",
-  "image_id": "sha256:2536cbc584d70c371606128cf39118df4bf3f83e3203f71367983a0cae84571e",
+  "image_id": "sha256:d7ff970e20439d673c527e5be78d96a589256a70acb14d88e19cffb647009031",
   "image_recipe": "infra/ci/rust.Dockerfile (base + rustup component add rustfmt clippy)",
   "fresh_build": true,
   "container_hardening": [
@@ -22,25 +22,25 @@
       "name": "versions",
       "command": "rustc --version && cargo --version && cargo fmt --version && cargo clippy --version",
       "exit_code": 0,
-      "duration_ms": 3070
+      "duration_ms": 3899
     },
     {
       "name": "fmt",
       "command": "cargo fmt --all --check",
       "exit_code": 0,
-      "duration_ms": 1229
+      "duration_ms": 1940
     },
     {
       "name": "clippy",
       "command": "cargo clippy --locked --offline --workspace --all-targets -- -D warnings",
       "exit_code": 0,
-      "duration_ms": 2609
+      "duration_ms": 4141
     },
     {
       "name": "test",
       "command": "cargo test --locked --offline --workspace",
       "exit_code": 0,
-      "duration_ms": 3920
+      "duration_ms": 5415
     }
   ],
   "ok": true

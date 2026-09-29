@@ -1,6 +1,6 @@
 {
   "kind": "p00-acceptance-log",
-  "generated_at": "2026-09-29T02:47:42.011Z",
+  "generated_at": "2026-09-29T03:06:25.684Z",
   "rungs": [
     {
       "rung": "install (frozen lockfile)",
@@ -10,8 +10,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:10.828Z",
-      "duration_ms": 414,
+      "started_at": "2026-09-29T03:01:02.139Z",
+      "duration_ms": 838,
       "evidence": []
     },
     {
@@ -22,8 +22,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:11.247Z",
-      "duration_ms": 1787,
+      "started_at": "2026-09-29T03:01:02.995Z",
+      "duration_ms": 3071,
       "evidence": []
     },
     {
@@ -34,8 +34,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:13.034Z",
-      "duration_ms": 650,
+      "started_at": "2026-09-29T03:01:06.066Z",
+      "duration_ms": 1217,
       "evidence": [
         "evidence/P00/migrations.txt"
       ]
@@ -48,8 +48,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:13.685Z",
-      "duration_ms": 513,
+      "started_at": "2026-09-29T03:01:07.285Z",
+      "duration_ms": 1006,
       "evidence": [
         "evidence/P00/dependency-lock-summary.json"
       ]
@@ -62,8 +62,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:14.198Z",
-      "duration_ms": 2099,
+      "started_at": "2026-09-29T03:01:08.291Z",
+      "duration_ms": 6387,
       "evidence": [
         "evidence/P00/typecheck.txt"
       ]
@@ -76,8 +76,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:16.298Z",
-      "duration_ms": 983,
+      "started_at": "2026-09-29T03:01:14.680Z",
+      "duration_ms": 1864,
       "evidence": [
         "evidence/P00/lint.txt"
       ]
@@ -90,8 +90,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:17.283Z",
-      "duration_ms": 194,
+      "started_at": "2026-09-29T03:01:16.545Z",
+      "duration_ms": 324,
       "evidence": [
         "evidence/P00/dependency-boundaries.txt"
       ]
@@ -104,8 +104,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:17.478Z",
-      "duration_ms": 410,
+      "started_at": "2026-09-29T03:01:16.870Z",
+      "duration_ms": 901,
       "evidence": [
         "evidence/P00/schema-drift.txt"
       ]
@@ -118,8 +118,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:17.889Z",
-      "duration_ms": 158,
+      "started_at": "2026-09-29T03:01:17.773Z",
+      "duration_ms": 370,
       "evidence": [
         "evidence/P00/generated-docs.txt"
       ]
@@ -132,8 +132,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:18.048Z",
-      "duration_ms": 6235,
+      "started_at": "2026-09-29T03:01:18.144Z",
+      "duration_ms": 6983,
       "evidence": [
         "evidence/P00/unit-tests.json"
       ]
@@ -146,8 +146,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:24.283Z",
-      "duration_ms": 5105,
+      "started_at": "2026-09-29T03:01:25.128Z",
+      "duration_ms": 6994,
       "evidence": [
         "evidence/P00/contract-tests.json"
       ]
@@ -160,8 +160,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:29.388Z",
-      "duration_ms": 12011,
+      "started_at": "2026-09-29T03:01:32.122Z",
+      "duration_ms": 22323,
       "evidence": [
         "evidence/P00/integration-tests.json"
       ]
@@ -174,8 +174,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:41.399Z",
-      "duration_ms": 8301,
+      "started_at": "2026-09-29T03:01:54.445Z",
+      "duration_ms": 12836,
       "evidence": [
         "evidence/P00/failure-tests.vitest.json"
       ]
@@ -188,8 +188,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:43:49.701Z",
-      "duration_ms": 15965,
+      "started_at": "2026-09-29T03:02:07.282Z",
+      "duration_ms": 21087,
       "evidence": [
         "evidence/P00/e2e-tests.json"
       ]
@@ -202,8 +202,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:44:05.666Z",
-      "duration_ms": 3997,
+      "started_at": "2026-09-29T03:02:28.369Z",
+      "duration_ms": 6194,
       "evidence": [
         "evidence/P00/python-checks.json",
         "evidence/P00/python-tests.xml"
@@ -217,8 +217,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:44:09.664Z",
-      "duration_ms": 28209,
+      "started_at": "2026-09-29T03:02:34.563Z",
+      "duration_ms": 44962,
       "evidence": [
         "evidence/P00/rust-checks.json"
       ]
@@ -231,8 +231,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:44:37.873Z",
-      "duration_ms": 3630,
+      "started_at": "2026-09-29T03:03:19.527Z",
+      "duration_ms": 6560,
       "evidence": [
         "evidence/P00/langgraph-smoke.json"
       ]
@@ -245,8 +245,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:44:41.503Z",
-      "duration_ms": 13079,
+      "started_at": "2026-09-29T03:03:26.088Z",
+      "duration_ms": 16103,
       "evidence": [
         "evidence/P00/persistence-resume.json"
       ]
@@ -260,8 +260,8 @@
       ],
       "exit_code": 2,
       "ok": true,
-      "started_at": "2026-09-29T02:44:54.582Z",
-      "duration_ms": 739,
+      "started_at": "2026-09-29T03:03:42.193Z",
+      "duration_ms": 415,
       "evidence": [
         "evidence/P00/traceability-audit.json"
       ]
@@ -274,22 +274,22 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:44:55.322Z",
-      "duration_ms": 150817,
+      "started_at": "2026-09-29T03:03:42.609Z",
+      "duration_ms": 144255,
       "evidence": [
         "evidence/P00/fresh-environment.json"
       ]
     },
     {
       "rung": "performance baseline",
-      "command": "node --env-file-if-exists=.env scripts/p00/perf-baseline.ts --json C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\performance-baseline.json --bootstrap-ms 33477",
+      "command": "node --env-file-if-exists=.env scripts/p00/perf-baseline.ts --json C:\\Users\\Robbinson\\Documents\\Santa_Claus\\evidence\\P00\\performance-baseline.json --bootstrap-ms 32858",
       "expected_exit": [
         0
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:47:26.163Z",
-      "duration_ms": 7937,
+      "started_at": "2026-09-29T03:06:06.886Z",
+      "duration_ms": 13471,
       "evidence": [
         "evidence/P00/performance-baseline.json"
       ]
@@ -302,8 +302,8 @@
       ],
       "exit_code": 0,
       "ok": true,
-      "started_at": "2026-09-29T02:47:34.102Z",
-      "duration_ms": 1032,
+      "started_at": "2026-09-29T03:06:20.358Z",
+      "duration_ms": 355,
       "evidence": [
         "evidence/P00/security-secrets.txt"
       ]

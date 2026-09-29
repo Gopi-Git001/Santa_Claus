@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "phase": "P00",
-  "generated_at": "2026-09-29T02:47:42.236Z",
-  "git_commit": "1f25edc5e2da500941892b9498a79e6be7a0dd69",
+  "generated_at": "2026-09-29T03:06:25.753Z",
+  "git_commit": "52d01794d2429f78daf491454151442cda2e59dc",
   "files": [
     {
       "path": "acceptance-log.json",
-      "sha256": "5734d58880334248763b88a0fb8c6fc48a643fecf9bf211325a7846f7624718e",
-      "size_bytes": 9120
+      "sha256": "e6292aa71d44961f32fed96fa2eab9de8316adf5a5c972a15fefc72adb871a6f",
+      "size_bytes": 9124
     },
     {
       "path": "blockers.json",
@@ -16,27 +16,27 @@
     },
     {
       "path": "contract-tests.json",
-      "sha256": "94b85e331beaa99ac117b0769d2bea6c39169b61be25dbdde590c6ef70554b19",
-      "size_bytes": 19282
+      "sha256": "53c499706568bfef4b3739ea078da8e9f70a230f6d13d775556aac70fd372a25",
+      "size_bytes": 19263
     },
     {
       "path": "dependency-boundaries.txt",
-      "sha256": "c1020fe8620e61770b3a9c07e5a7831010ff7822b6bf201f78915e20f47a839b",
+      "sha256": "f26b27361c74ae070edb3996f627db4fc75703c009e2e9cc177a5baea7322c2a",
       "size_bytes": 167
     },
     {
       "path": "dependency-lock-summary.json",
-      "sha256": "d3df800492ebd13384d2806df5e5a583368e2385c38cfe1b0db6af466b96fa25",
-      "size_bytes": 8601
+      "sha256": "19413cf1988d53808170d0c2c2c61544fc226e906599f9c5f52647e123bc2137",
+      "size_bytes": 8603
     },
     {
       "path": "e2e-tests.json",
-      "sha256": "74890db0a8aee5d51b90cf14f600df8ae46ff602d401b14594a61fa875820002",
-      "size_bytes": 1480
+      "sha256": "98c69cbe5e28ebdb36e274a810611780239cc1f03767fd0a4540e417417680ed",
+      "size_bytes": 1472
     },
     {
       "path": "environment.json",
-      "sha256": "3bb6b21cbf0280dab67e435220a527033a7198579d29408e9a264c193a98de0d",
+      "sha256": "e09caacf268c907baa03c93f0e64a4ed6169d1a0b5ac4facb0ecc823d72af7e2",
       "size_bytes": 1545
     },
     {
@@ -46,93 +46,98 @@
     },
     {
       "path": "failure-tests.json",
-      "sha256": "a31e746818f659fa2efb5a63eec432706af3d2b1ce721a54b02fb22a3cd3b606",
-      "size_bytes": 5191
+      "sha256": "37f874f05f9200af31cadb772703366da42987cdf4c8b25dbb40ad74b079759a",
+      "size_bytes": 5200
     },
     {
       "path": "failure-tests.vitest.json",
-      "sha256": "58f53eda11e0af7e1765e41f7364e281de016a61cbd4e6b311bbceb528b39001",
-      "size_bytes": 6296
+      "sha256": "e1068b081f0257d9d4ad9a52283b0c988f39571efc68442fd1b5e70b8c55ca62",
+      "size_bytes": 6315
     },
     {
       "path": "fresh-environment.json",
-      "sha256": "1275322d1b97ff3c2d505939d06124aa451fe5ac4ac1e20a570e628d7fb9d97d",
+      "sha256": "55ed86f19612bb75ec9bd30255c41d5992b7b5292193d337285790177a8a2655",
       "size_bytes": 9000
     },
     {
       "path": "generated-docs.txt",
-      "sha256": "3a971455f291eea9e1eb18056392c5e2c9c2dc2e57400f1248410a659181574a",
+      "sha256": "bb68f686430636dc51f2579cc9453ad210e76545541ba9672b75d3f9bc50cdf6",
       "size_bytes": 154
     },
     {
+      "path": "hosted-ci.json",
+      "sha256": "ec5e78454491f138aad900cb1da978021d47314d9453c801bddc91941ee2f98a",
+      "size_bytes": 1752
+    },
+    {
       "path": "integration-tests.json",
-      "sha256": "8f5e5432533f0bffcbd0b552ed9beaf4ccc85dc943711ce6be0c30cd10380d75",
-      "size_bytes": 10425
+      "sha256": "8cda90d04c526ab7c01e5a45a831b339579d91bee47433dd8334c34d5920eb18",
+      "size_bytes": 10445
     },
     {
       "path": "langgraph-smoke.json",
-      "sha256": "3d968a5a9efb88c841dc846e736a1c1d0ef5cc90c200e45a8581619a3e861836",
+      "sha256": "7c9939e7c12ae623800db659eb52007389e0581b64f21ffc9cd6fcbdfb46d8e9",
       "size_bytes": 20495
     },
     {
       "path": "lint.txt",
-      "sha256": "6c77e5b243665d8781fa139a23ad769f8e70d4d268b114aba76b5b6b8c63550e",
-      "size_bytes": 164
+      "sha256": "316bacbe91983874eae298cbb8e2ed7cc6c2fd5530f841cf6e7dfa5159c0dfb4",
+      "size_bytes": 165
     },
     {
       "path": "migrations.txt",
-      "sha256": "e29bb58ca5dc8d6cb8ca74ad19637b4ca3e4d07c5b8bdf81e937c971195c0ab3",
-      "size_bytes": 210
+      "sha256": "549db73e7c9f803012c43ca81210f6323408960e43c544c5bd736d9e6e717653",
+      "size_bytes": 212
     },
     {
       "path": "performance-baseline.json",
-      "sha256": "89ec0fba44c08e0210a7555b60a0616986c9f51708e4365dc875092ad78e26cd",
-      "size_bytes": 1357
+      "sha256": "62adcbff0a4b0809b947b960450187cbbbac01ed171a540a1a13d0f26aeff488",
+      "size_bytes": 1360
     },
     {
       "path": "persistence-resume.json",
-      "sha256": "a52cedd822ec030234ea7da8349ef246a6ecdb45eedd6d1b82123a0bf78afb67",
-      "size_bytes": 4601
+      "sha256": "dceb46c6ce9d040643c348b20ecd37dcac1548981e691f77379c88dfb6b67a11",
+      "size_bytes": 4599
     },
     {
       "path": "python-checks.json",
-      "sha256": "0a7b0fbe8cce42129d0daaa93d7a857e296ec82da26a758b1921a142793942dc",
-      "size_bytes": 1735
+      "sha256": "1476447931638521bd6f9e8985e0294d3008eba1d3b7fe8e828befd3e77c3f07",
+      "size_bytes": 1736
     },
     {
       "path": "python-tests.xml",
-      "sha256": "e2bf6fbd5539567b57982342f6a8c25420428fc90ffd7430c90d255a112a1245",
+      "sha256": "602e6eafc56fc5069b40beffa08d5445902ad94bb0302f0c6d3915dec2e252b3",
       "size_bytes": 656
     },
     {
       "path": "rust-checks.json",
-      "sha256": "68b00845a17362ee2cf46bf99d9115508d6ca21bb848d78520072f0ef1a9c1c4",
+      "sha256": "580d68e06bd6c80485d8596e3cd0e9a746e8266355489eb68d88d6121627bc1a",
       "size_bytes": 1383
     },
     {
       "path": "schema-drift.txt",
-      "sha256": "a97536f05275a61df38b7a994ed442fa1500660cdc4dbe52d9fdfd1a38371efd",
+      "sha256": "86c185ea1ca51e9e8ca8596d820e42f61dc1660635992e261d1495eed8569656",
       "size_bytes": 150
     },
     {
       "path": "security-secrets.txt",
-      "sha256": "68d289ba4b84e849d958636dbd9954ed068f8c9040ee70e64c581022881e9388",
-      "size_bytes": 179
+      "sha256": "42104dc152aff35068e19d95949f45d4f18dc308a0ce225502dbd90259117bfe",
+      "size_bytes": 178
     },
     {
       "path": "traceability-audit.json",
-      "sha256": "c875544d30ac17fee0f23c1632d356c90d081136fd54e587fcf76c3e97412a41",
+      "sha256": "c6474028fe61899b09caee6aff60321b7aa5174f6a7e07f038fffd93a4a043f7",
       "size_bytes": 16401
     },
     {
       "path": "typecheck.txt",
-      "sha256": "156d0ccc7030f6cbf0ac754cfb90c8c51473a76c7dc431a545df298abdf75973",
+      "sha256": "eb0f4b0184eeeea41b784d32e6dd974d7f3268228ce114303ef003b0447455cb",
       "size_bytes": 136
     },
     {
       "path": "unit-tests.json",
-      "sha256": "7af0850f7613cc7a84b5f4e744cd36f87aeb6e0f7da61be2ea8d080eb9679009",
-      "size_bytes": 37186
+      "sha256": "e2d8691ead8bbd5ad91e19bcef4d0517ec4c36259d1f8bfed68181c8e4e063d7",
+      "size_bytes": 37182
     }
   ]
 }

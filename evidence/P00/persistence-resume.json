@@ -1,22 +1,22 @@
 {
   "kind": "p00-persistence-resume",
-  "generated_at": "2026-09-29T02:44:53.966Z",
+  "generated_at": "2026-09-29T03:03:42.060Z",
   "database": "real PostgreSQL (fresh isolated database, dropped afterwards)",
   "checkpoint_store": "postgresql schema harness_checkpoints (LangGraph PostgresSaver behind CheckpointPersistence)",
   "steps": [
     {
       "step": "1-2 start graph in process A; checkpoint at human interrupt; process A is SIGKILLed",
-      "pid": 18140,
+      "pid": 8648,
       "identity": {
-        "run_id": "run_2hy4aetjah1td76yjxaav8ft5n",
-        "thread_id": "thr_g3emf0k12v47gfe5mtgjwc1psd",
-        "trace_id": "b431de8e650f83610c4a56b535de4d37"
+        "run_id": "run_qmvtddnfxyp3f2e6k1ccnfw35z",
+        "thread_id": "thr_qfe8m9yp643kckk8wc0dn1gjxz",
+        "trace_id": "4c55a9fce3a17e898a34ee6766877bc9"
       },
       "kind": "interrupted",
       "exit_code": 1,
       "signal": null,
       "killed": true,
-      "duration_ms": 2052
+      "duration_ms": 5422
     },
     {
       "step": "3 process A terminated",
@@ -24,17 +24,17 @@
     },
     {
       "step": "verify persisted state from process B",
-      "pid": 14280,
+      "pid": 7552,
       "snapshot": {
         "identity": {
-          "run_id": "run_2hy4aetjah1td76yjxaav8ft5n",
-          "thread_id": "thr_g3emf0k12v47gfe5mtgjwc1psd",
-          "trace_id": "b431de8e650f83610c4a56b535de4d37"
+          "run_id": "run_qmvtddnfxyp3f2e6k1ccnfw35z",
+          "thread_id": "thr_qfe8m9yp643kckk8wc0dn1gjxz",
+          "trace_id": "4c55a9fce3a17e898a34ee6766877bc9"
         },
         "state": {
-          "run_id": "run_2hy4aetjah1td76yjxaav8ft5n",
-          "thread_id": "thr_g3emf0k12v47gfe5mtgjwc1psd",
-          "trace_id": "b431de8e650f83610c4a56b535de4d37",
+          "run_id": "run_qmvtddnfxyp3f2e6k1ccnfw35z",
+          "thread_id": "thr_qfe8m9yp643kckk8wc0dn1gjxz",
+          "trace_id": "4c55a9fce3a17e898a34ee6766877bc9",
           "goal": "restart proof",
           "approval_required": true,
           "fail_at_node": null,
@@ -70,16 +70,16 @@
       "exit_code": 0,
       "signal": null,
       "killed": false,
-      "duration_ms": 2956
+      "duration_ms": 2525
     },
     {
       "step": "4-5 resume same thread from process C; verify expected state",
-      "pid": 7468,
+      "pid": 5508,
       "kind": "completed",
       "state": {
-        "run_id": "run_2hy4aetjah1td76yjxaav8ft5n",
-        "thread_id": "thr_g3emf0k12v47gfe5mtgjwc1psd",
-        "trace_id": "b431de8e650f83610c4a56b535de4d37",
+        "run_id": "run_qmvtddnfxyp3f2e6k1ccnfw35z",
+        "thread_id": "thr_qfe8m9yp643kckk8wc0dn1gjxz",
+        "trace_id": "4c55a9fce3a17e898a34ee6766877bc9",
         "goal": "restart proof",
         "approval_required": true,
         "fail_at_node": null,
@@ -107,7 +107,7 @@
       "exit_code": 0,
       "signal": null,
       "killed": false,
-      "duration_ms": 4581
+      "duration_ms": 1918
     },
     {
       "step": "6 thread isolation attempts",

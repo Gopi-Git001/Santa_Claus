@@ -8,12 +8,15 @@ dependencies, but two items cannot pass yet:
 1. **P00-BLK-001 (specification gap, open):** the authoritative C001–C168 capability catalog has
    not been provided. By project-owner instruction no capability records were invented, so the five
    *Requirements* criteria and "P00–P18 registry valid" are **BLOCKED**.
-2. **Hosted CI (not verified):** the branch was not pushed (project-owner decision), so the GitHub
-   Actions workflow has never run. All 14 CI job equivalents pass locally; "all mandatory CI jobs
-   green" is **NOT_VERIFIED**.
+2. **Hosted CI is not all green (FAIL):** with project-owner authorization the branch was pushed and
+   GitHub Actions ran ([run 36514967772](https://github.com/Gopi-Git001/Santa_Claus/actions/runs/36514967772),
+   commit `07f34d8`, ubuntu-24.04). 11/14 jobs succeeded. The 3 red jobs are all consequences of
+   P00-BLK-001: `validate-spec-ledger` and `traceability-audit` exit 2 (BLOCKED, 0 errors), and
+   `evidence-manifest` ran the full acceptance ladder **21/21 rungs ok on Linux** but its verifier
+   correctly reports INCOMPLETE. Recorded in `hosted-ci.json` (generated from the GitHub API).
 
-Evidence commit: `1f25edc5e2da500941892b9498a79e6be7a0dd69` (branch `p00-foundation`, clean tree,
-not pushed). Evidence produced 2026-09-28/29 by `scripts/p00/acceptance.ts`; verdict by the
+Evidence commit: `52d01794d2429f78daf491454151442cda2e59dc` (branch `p00-foundation`, clean tree;
+branch pushed to `origin` with authorization; `main` untouched). Evidence produced 2026-09-28/29 by `scripts/p00/acceptance.ts`; verdict by the
 independent verifier `scripts/p00/verify.ts` (`evidence/P00/verifier-result.json`).
 
 ---
@@ -40,7 +43,7 @@ From `environment.json`, `python-checks.json`, `rust-checks.json`, `dependency-l
 | Docker | 29.6.2 |
 | Python | CPython 3.12.13 via uv 0.11.30; ruff 0.16.9, mypy 2.3.1, pytest 9.1.1 |
 | Rust | rustc 1.98.1, cargo 1.98.1, rustfmt 1.9.0, clippy 0.1.98 — container only |
-| Rust image | base `rust:1.98.1-slim-trixie@sha256:4cd82946…` + rustfmt/clippy (`infra/ci/rust.Dockerfile`), built image `sha256:2536cbc5…` |
+| Rust image | base `rust:1.98.1-slim-trixie@sha256:4cd82946…` + rustfmt/clippy (`infra/ci/rust.Dockerfile`), built image `sha256:d7ff970e…` |
 
 Lockfiles: `pnpm-lock.yaml`, `services/python/uv.lock`, `services/rust/Cargo.lock` (hashes in
 `dependency-lock-summary.json`). All direct dependencies are exact versions (67/67 lockfile checks pass).
@@ -98,9 +101,9 @@ findings; ruff lint/format, strict mypy exit 0; `cargo fmt --check`, `clippy -D 
   across all processes; pre-restart nodes not re-executed.
 - **Thread isolation**: another run's identity → `THREAD_MISMATCH`; unknown thread →
   `THREAD_NOT_FOUND`; finished thread → `GRAPH_NOT_INTERRUPTED`; the other thread's state untouched.
-- **Fresh-environment reproduction** (`fresh-environment.json`): clean clone of `1f25edc` into a temp
+- **Fresh-environment reproduction** (`fresh-environment.json`): clean clone of `52d0179` into a temp
   directory, bootstrap with its own new PostgreSQL (separate compose project, port 55433, new volume,
-  generated credentials) in 33.5 s, then typecheck, lint, all 226 tests, boundaries, schema drift,
+  generated credentials) in 32.9 s, then typecheck, lint, all 226 tests, boundaries, schema drift,
   generated docs, secret scan, lockfiles, Python, Rust (fresh image + volumes), smoke, and traceability
   (BLOCKED as expected) — all as expected; database destroyed afterwards.
 
@@ -129,9 +132,9 @@ no real ledger exists yet.
 
 ### Performance baseline (`performance-baseline.json`; development machine, not an SLO)
 
-Bootstrap (fresh clone) 33.5 s · graph invocation p50 196.6 ms / p95 254.3 ms (4-node run incl.
-6 synchronous checkpoint writes, run/event bookkeeping, no LLM) · checkpoint read p50 2.9 ms ·
-event write p50 3.5 ms · artifact put 1 KiB p50 3.5 ms · get+verify p50 2.2 ms · smoke process RSS 201 MB.
+Bootstrap (fresh clone) 32.9 s · graph invocation p50 222.0 ms / p95 1486.1 ms (p95 includes a cold outlier on this dev machine) (4-node run incl.
+6 synchronous checkpoint writes, run/event bookkeeping, no LLM) · checkpoint read p50 3.0 ms ·
+event write p50 3.6 ms · artifact put 1 KiB p50 3.6 ms · get+verify p50 2.2 ms · smoke process RSS 90 MB.
 
 ## 4. Traceability status (C001–C168)
 
@@ -197,10 +200,11 @@ The verifier found the real database secret in 0 evidence files.
 
 - **Capability catalog missing** (P00-BLK-001): no C001–C168 records; phase registry fields that the
   specifications do not define are `null`.
-- **Hosted CI never ran**: `.github/workflows/p00.yml` (14 jobs, SHA-pinned actions) is written and its
-  YAML parses, but GitHub has not executed it; runner-specific issues cannot be excluded until it does.
-- **Single platform**: all runs were on Windows 10 with Docker Desktop. Linux behaviour (CI target) is
-  expected but unproven; on Linux the SIGKILL is reported as a signal rather than exit code 1.
+- **Hosted CI red on 3 jobs** — all attributable to P00-BLK-001 (see top). The hosted run was on commit
+  `07f34d8`; the evidence commit `52d0179` adds only a verifier message refinement and the recorded run.
+- **Platforms**: local evidence on Windows 10 + Docker Desktop; the hosted run proved the same ladder on
+  Linux (ubuntu-24.04), including real PostgreSQL, the SIGKILL restart proof, the fresh-clone
+  reproduction and the containerised Rust checks.
 - **Fresh-environment caches**: the fresh clone reused the machine's pnpm/uv package caches and Docker
   image cache (dependencies still installed from frozen lockfiles; the Rust image was rebuilt with no cache).
 - **Checkpoint schema** is created/versioned by the LangGraph saver's own `setup()`, outside the harness
@@ -216,8 +220,8 @@ The verifier found the real database secret in 0 evidence files.
 
 ## 8. Unexplained or unverified items
 
-- None unexplained. Unverified: hosted CI (above). Blocked: capability ledger and phase-registry
-  content (P00-BLK-001).
+- None unexplained. Failing: hosted CI (3 jobs, all caused by P00-BLK-001). Blocked: capability ledger
+  and phase-registry content (P00-BLK-001).
 - No mandatory test was skipped (0 skipped/todo in all layers; 0 skipped in pytest; 0 ignored in cargo).
 
 ## 9. Gate status (§34, from `verifier-result.json`)
@@ -230,15 +234,15 @@ The verifier found the real database secret in 0 evidence files.
 | Runtime | 6 | — |
 | Persistence/artifacts | 3 | — |
 | Security/quality | 5 | — |
-| CI/evidence | evidence commit binding, evidence complete, report, no skips | CI jobs green — NOT_VERIFIED; independent verifier success — FAIL (follows from the above) |
+| CI/evidence | evidence commit binding, evidence complete, report, no skips | CI jobs green — FAIL (3 hosted jobs red due to P00-BLK-001); independent verifier success — FAIL (follows from the above) |
 
 **Final P00 gate status: INCOMPLETE.** To reach VERIFIED:
 
 1. Provide the authoritative C001–C168 catalog → import into `specs/capabilities/ledger.json`
    (bound by SHA-256), fill phase ownership from it, run `node scripts/validate-specs.ts` to VALID,
    then mark P00-BLK-001 `RESOLVED`.
-2. Authorize pushing `p00-foundation` (or run the workflow yourself) → record the hosted run in
-   `evidence/P00/hosted-ci.json`.
-3. Re-run `node scripts/p00/acceptance.ts` and `node scripts/p00/verify.ts` on the resulting commit.
+2. Push the resulting commit so hosted CI runs green on it, and record that run in
+   `evidence/P00/hosted-ci.json` (from `gh run view <id> --json …`).
+3. Re-run `node scripts/p00/acceptance.ts` and `node scripts/p00/verify.ts` on that commit.
 
 P01 has not been started and will not be without explicit authorization.

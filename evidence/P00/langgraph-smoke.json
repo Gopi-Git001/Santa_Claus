@@ -1,6 +1,6 @@
 {
   "kind": "p00-langgraph-smoke",
-  "generated_at": "2026-09-29T02:44:41.317Z",
+  "generated_at": "2026-09-29T03:03:24.468Z",
   "graph": {
     "name": "p00.smoke",
     "version": "1"
@@ -28,12 +28,12 @@
     {
       "name": "straight_through",
       "identity": {
-        "run_id": "run_5aa47qtk88hwyp63qckdrskqp9",
-        "thread_id": "thr_wshfykd4q31mmk8598f4ssjyxd",
-        "trace_id": "4c1da47c536eec0c3c479bac5bcd8183"
+        "run_id": "run_p33a3vsr8be1rfykyt26f7cnw3",
+        "thread_id": "thr_wnxy3ypjttkjvh8ddh3rgverfe",
+        "trace_id": "d715e9f8b93f73d7bc8a97e142157425"
       },
       "outcome": "completed",
-      "duration_ms": 293,
+      "duration_ms": 568,
       "stream_observations": [
         {
           "mode": "updates",
@@ -62,9 +62,9 @@
       ],
       "checkpoint_rows": 6,
       "final_state": {
-        "run_id": "run_5aa47qtk88hwyp63qckdrskqp9",
-        "thread_id": "thr_wshfykd4q31mmk8598f4ssjyxd",
-        "trace_id": "4c1da47c536eec0c3c479bac5bcd8183",
+        "run_id": "run_p33a3vsr8be1rfykyt26f7cnw3",
+        "thread_id": "thr_wnxy3ypjttkjvh8ddh3rgverfe",
+        "trace_id": "d715e9f8b93f73d7bc8a97e142157425",
         "goal": "P00 smoke: straight through",
         "approval_required": false,
         "fail_at_node": null,
@@ -87,14 +87,14 @@
       },
       "run": {
         "schema_version": 1,
-        "id": "run_5aa47qtk88hwyp63qckdrskqp9",
+        "id": "run_p33a3vsr8be1rfykyt26f7cnw3",
         "root_goal": "P00 smoke: straight through",
         "status": "COMPLETED",
-        "created_at": "2026-09-29T02:44:40.537Z",
-        "updated_at": "2026-09-29T02:44:40.821Z",
+        "created_at": "2026-09-29T03:03:23.252Z",
+        "updated_at": "2026-09-29T03:03:23.807Z",
         "policy_profile": "p00-default",
         "budget_profile": "p00-default",
-        "root_thread_id": "thr_wshfykd4q31mmk8598f4ssjyxd",
+        "root_thread_id": "thr_wnxy3ypjttkjvh8ddh3rgverfe",
         "metadata": {
           "graph": "p00.smoke",
           "graph_version": "1"
@@ -102,124 +102,124 @@
       },
       "events": [
         {
-          "event_id": "evt_8mpz5w788y89kf29qa9g6fkhf5",
+          "event_id": "evt_mcd6x944f59a4yeyms3hse15va",
           "type": "run.created",
-          "at": "2026-09-29T02:44:40.553Z",
+          "at": "2026-09-29T03:03:23.293Z",
           "node": null,
           "causation_id": null,
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_ejjycpgafzp2k13t2a4wqd50n0",
+          "event_id": "evt_w6b00ch9xk60ccatsqw9y4ybt5",
           "type": "run.status_changed",
-          "at": "2026-09-29T02:44:40.572Z",
+          "at": "2026-09-29T03:03:23.324Z",
           "node": null,
-          "causation_id": "evt_8mpz5w788y89kf29qa9g6fkhf5",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_mcd6x944f59a4yeyms3hse15va",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_hwacbp0vatt0ymwkk61yzz76gm",
+          "event_id": "evt_dnaek3nemysh777qcbn8137fe9",
           "type": "graph.started",
-          "at": "2026-09-29T02:44:40.599Z",
+          "at": "2026-09-29T03:03:23.353Z",
           "node": null,
-          "causation_id": "evt_ejjycpgafzp2k13t2a4wqd50n0",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_w6b00ch9xk60ccatsqw9y4ybt5",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_h6t29h4hepptnpxbcn0kcf5e1k",
+          "event_id": "evt_qbh53qwzh15n2w8cxffsmmhrv0",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:40.687Z",
+          "at": "2026-09-29T03:03:23.537Z",
           "node": "initialize_run",
-          "causation_id": "evt_hwacbp0vatt0ymwkk61yzz76gm",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_dnaek3nemysh777qcbn8137fe9",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_m1e0gfxmsfk72d995z6a4vcew5",
+          "event_id": "evt_4cz20kddbfb5gymxf4syk4bby6",
           "type": "graph.node_completed",
-          "at": "2026-09-29T02:44:40.691Z",
+          "at": "2026-09-29T03:03:23.585Z",
           "node": "initialize_run",
-          "causation_id": "evt_h6t29h4hepptnpxbcn0kcf5e1k",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_qbh53qwzh15n2w8cxffsmmhrv0",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_9wtq8jpdw089cp9n9nzbbfyw77",
+          "event_id": "evt_0r2na2eqptvjtftmb0x3xyfs19",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:40.712Z",
+          "at": "2026-09-29T03:03:23.621Z",
           "node": "record_intent",
-          "causation_id": "evt_m1e0gfxmsfk72d995z6a4vcew5",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_4cz20kddbfb5gymxf4syk4bby6",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_9rkwa1w082pmmqw9rnmb1f3tqy",
+          "event_id": "evt_pt349r3nkdejkspqgs4hdtv1rn",
           "type": "graph.node_completed",
-          "at": "2026-09-29T02:44:40.716Z",
+          "at": "2026-09-29T03:03:23.625Z",
           "node": "record_intent",
-          "causation_id": "evt_9wtq8jpdw089cp9n9nzbbfyw77",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_0r2na2eqptvjtftmb0x3xyfs19",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_kgs8zwakcf195bj832s02n5egw",
+          "event_id": "evt_9qp2n3skgzc33twqkbwexzj69n",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:40.735Z",
+          "at": "2026-09-29T03:03:23.654Z",
           "node": "approval_gate",
-          "causation_id": "evt_9rkwa1w082pmmqw9rnmb1f3tqy",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_pt349r3nkdejkspqgs4hdtv1rn",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_vtrnzzcaf93m1nswrh250zhnb7",
+          "event_id": "evt_kppyv22ma5ghk2k564zm1aq8nd",
           "type": "graph.node_completed",
-          "at": "2026-09-29T02:44:40.739Z",
+          "at": "2026-09-29T03:03:23.659Z",
           "node": "approval_gate",
-          "causation_id": "evt_kgs8zwakcf195bj832s02n5egw",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_9qp2n3skgzc33twqkbwexzj69n",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_p35e4cdqe40d3zbf01ner4fezz",
+          "event_id": "evt_a71xf4fg0vwh5wyb3krej8rg3t",
           "type": "policy.decision_recorded",
-          "at": "2026-09-29T02:44:40.742Z",
+          "at": "2026-09-29T03:03:23.664Z",
           "node": null,
-          "causation_id": "evt_vtrnzzcaf93m1nswrh250zhnb7",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_kppyv22ma5ghk2k564zm1aq8nd",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_565papd92xprj3e1j0ryprg12t",
+          "event_id": "evt_fxx1jezpjg263j4fgsf7eh5ptv",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:40.762Z",
+          "at": "2026-09-29T03:03:23.706Z",
           "node": "finalize",
-          "causation_id": "evt_p35e4cdqe40d3zbf01ner4fezz",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_a71xf4fg0vwh5wyb3krej8rg3t",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_ncd9thwc4zp2qjp69vbeqx39nt",
+          "event_id": "evt_75e12n3ykf4ktav6t0qw6sa1ra",
           "type": "graph.node_completed",
-          "at": "2026-09-29T02:44:40.767Z",
+          "at": "2026-09-29T03:03:23.719Z",
           "node": "finalize",
-          "causation_id": "evt_565papd92xprj3e1j0ryprg12t",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_fxx1jezpjg263j4fgsf7eh5ptv",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_wt47dmcr30nk4dj2pgj8rwacns",
+          "event_id": "evt_vs0sxc7sm36hdjngpbp3yv60k6",
           "type": "graph.completed",
-          "at": "2026-09-29T02:44:40.793Z",
+          "at": "2026-09-29T03:03:23.759Z",
           "node": null,
-          "causation_id": "evt_ncd9thwc4zp2qjp69vbeqx39nt",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_75e12n3ykf4ktav6t0qw6sa1ra",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_j3xkpdmvc239d7qtdchz5mz27s",
+          "event_id": "evt_fhs50p4chqz2bht6vbq6cgkrqh",
           "type": "artifact.created",
-          "at": "2026-09-29T02:44:40.813Z",
+          "at": "2026-09-29T03:03:23.794Z",
           "node": null,
-          "causation_id": "evt_wt47dmcr30nk4dj2pgj8rwacns",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_vs0sxc7sm36hdjngpbp3yv60k6",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         },
         {
-          "event_id": "evt_1d6k4qyr6aaq08y6m2xv73sf3c",
+          "event_id": "evt_yng1fb0wb6xtatty9emw1q7339",
           "type": "run.status_changed",
-          "at": "2026-09-29T02:44:40.824Z",
+          "at": "2026-09-29T03:03:23.811Z",
           "node": null,
-          "causation_id": "evt_j3xkpdmvc239d7qtdchz5mz27s",
-          "correlation_id": "run_5aa47qtk88hwyp63qckdrskqp9"
+          "causation_id": "evt_fhs50p4chqz2bht6vbq6cgkrqh",
+          "correlation_id": "run_p33a3vsr8be1rfykyt26f7cnw3"
         }
       ],
       "causal_chain_intact": true
@@ -227,9 +227,9 @@
     {
       "name": "interrupt_resume",
       "identity": {
-        "run_id": "run_4b20xcxryw9537680crvhxg26w",
-        "thread_id": "thr_n3b5jjy7wcmyhky4k7varqmpwm",
-        "trace_id": "475c0c949504afcec657437c41cc5947"
+        "run_id": "run_t623aq268rz0xrhwyrvt9j432f",
+        "thread_id": "thr_atx4p8pdtddp94w30mbtzy48k9",
+        "trace_id": "5939b97ef0fb60443559013ac7e1349f"
       },
       "outcome_before_resume": "interrupted",
       "pending_interrupt": {
@@ -283,9 +283,9 @@
         }
       ],
       "final_state": {
-        "run_id": "run_4b20xcxryw9537680crvhxg26w",
-        "thread_id": "thr_n3b5jjy7wcmyhky4k7varqmpwm",
-        "trace_id": "475c0c949504afcec657437c41cc5947",
+        "run_id": "run_t623aq268rz0xrhwyrvt9j432f",
+        "thread_id": "thr_atx4p8pdtddp94w30mbtzy48k9",
+        "trace_id": "5939b97ef0fb60443559013ac7e1349f",
         "goal": "P00 smoke: human approval",
         "approval_required": true,
         "fail_at_node": null,
@@ -312,14 +312,14 @@
       },
       "run": {
         "schema_version": 1,
-        "id": "run_4b20xcxryw9537680crvhxg26w",
+        "id": "run_t623aq268rz0xrhwyrvt9j432f",
         "root_goal": "P00 smoke: human approval",
         "status": "COMPLETED",
-        "created_at": "2026-09-29T02:44:40.837Z",
-        "updated_at": "2026-09-29T02:44:41.148Z",
+        "created_at": "2026-09-29T03:03:23.830Z",
+        "updated_at": "2026-09-29T03:03:24.314Z",
         "policy_profile": "p00-default",
         "budget_profile": "p00-default",
-        "root_thread_id": "thr_n3b5jjy7wcmyhky4k7varqmpwm",
+        "root_thread_id": "thr_atx4p8pdtddp94w30mbtzy48k9",
         "metadata": {
           "graph": "p00.smoke",
           "graph_version": "1"
@@ -327,180 +327,180 @@
       },
       "events": [
         {
-          "event_id": "evt_qdq67j23bqs2vwehqskqyper4x",
+          "event_id": "evt_3w7v893qsvc2yb022zswkvj4kt",
           "type": "run.created",
-          "at": "2026-09-29T02:44:40.842Z",
+          "at": "2026-09-29T03:03:23.840Z",
           "node": null,
           "causation_id": null,
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_w7e4qt8q032zbjartk0mrmegx9",
+          "event_id": "evt_sdpe83tazyeb1sc21q3k5x25qk",
           "type": "run.status_changed",
-          "at": "2026-09-29T02:44:40.850Z",
+          "at": "2026-09-29T03:03:23.852Z",
           "node": null,
-          "causation_id": "evt_qdq67j23bqs2vwehqskqyper4x",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_3w7v893qsvc2yb022zswkvj4kt",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_mg06annhgz0t2c9zh14x9mztd2",
+          "event_id": "evt_8pdb9yvgya21d581sh88yndkqf",
           "type": "graph.started",
-          "at": "2026-09-29T02:44:40.861Z",
+          "at": "2026-09-29T03:03:23.870Z",
           "node": null,
-          "causation_id": "evt_w7e4qt8q032zbjartk0mrmegx9",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_sdpe83tazyeb1sc21q3k5x25qk",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_epzcpxk9e7r1ntw09ycbf9ce4c",
+          "event_id": "evt_w27tct6ym2wx4c2bhw3tjghgr7",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:40.895Z",
+          "at": "2026-09-29T03:03:23.919Z",
           "node": "initialize_run",
-          "causation_id": "evt_mg06annhgz0t2c9zh14x9mztd2",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_8pdb9yvgya21d581sh88yndkqf",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_1dy5sb9yfvws4c5v8xeh9jfv5b",
+          "event_id": "evt_qbwwfjzpzrka14zknfsh6b0335",
           "type": "graph.node_completed",
-          "at": "2026-09-29T02:44:40.900Z",
+          "at": "2026-09-29T03:03:23.923Z",
           "node": "initialize_run",
-          "causation_id": "evt_epzcpxk9e7r1ntw09ycbf9ce4c",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_w27tct6ym2wx4c2bhw3tjghgr7",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_zxanbstjx5zmmxd41h3cg3wn2c",
+          "event_id": "evt_gbha4cc4kmazkgvgybgvwkafac",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:40.916Z",
+          "at": "2026-09-29T03:03:23.945Z",
           "node": "record_intent",
-          "causation_id": "evt_1dy5sb9yfvws4c5v8xeh9jfv5b",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_qbwwfjzpzrka14zknfsh6b0335",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_fnrf1cjfy90dc8kcm8qddka4zk",
+          "event_id": "evt_wm93nhkg1ay87gvxd537x24j7x",
           "type": "graph.node_completed",
-          "at": "2026-09-29T02:44:40.920Z",
+          "at": "2026-09-29T03:03:23.950Z",
           "node": "record_intent",
-          "causation_id": "evt_zxanbstjx5zmmxd41h3cg3wn2c",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_gbha4cc4kmazkgvgybgvwkafac",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_wxdxnz7c8ak03d7yg5jmmg169d",
+          "event_id": "evt_gdj6xzb9qb0yvfy8y7gn9a111t",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:40.938Z",
+          "at": "2026-09-29T03:03:24.018Z",
           "node": "approval_gate",
-          "causation_id": "evt_fnrf1cjfy90dc8kcm8qddka4zk",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_wm93nhkg1ay87gvxd537x24j7x",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_m82cdhr06xpp59anfd859r6yxm",
+          "event_id": "evt_07xk4t3nbn4nhyggxmg0kk119j",
           "type": "graph.node_completed",
-          "at": "2026-09-29T02:44:40.941Z",
+          "at": "2026-09-29T03:03:24.033Z",
           "node": "approval_gate",
-          "causation_id": "evt_wxdxnz7c8ak03d7yg5jmmg169d",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_gdj6xzb9qb0yvfy8y7gn9a111t",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_pfn9fwm2dm7f5z0yg592z0y6t3",
+          "event_id": "evt_xh14xz6vemxfmj5h9002ahypvk",
           "type": "policy.decision_recorded",
-          "at": "2026-09-29T02:44:40.944Z",
+          "at": "2026-09-29T03:03:24.044Z",
           "node": null,
-          "causation_id": "evt_m82cdhr06xpp59anfd859r6yxm",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_07xk4t3nbn4nhyggxmg0kk119j",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_2t9x6tfjpfv8tz4v7gz9vsrw08",
+          "event_id": "evt_tc4yx8gzvkqb6d5tzxq7877vrr",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:40.966Z",
+          "at": "2026-09-29T03:03:24.108Z",
           "node": "interrupt_for_human",
-          "causation_id": "evt_pfn9fwm2dm7f5z0yg592z0y6t3",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_xh14xz6vemxfmj5h9002ahypvk",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_ynp03pd5aba132a12ypcp7gpsf",
+          "event_id": "evt_dant6sk2q5cmn585nwhtmw58hg",
           "type": "graph.interrupted",
-          "at": "2026-09-29T02:44:40.981Z",
+          "at": "2026-09-29T03:03:24.161Z",
           "node": "interrupt_for_human",
-          "causation_id": "evt_2t9x6tfjpfv8tz4v7gz9vsrw08",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_tc4yx8gzvkqb6d5tzxq7877vrr",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_rdrqhpgq24mcra5v28s6fayxq6",
+          "event_id": "evt_70416c09qfgr60rxmb44m3s56h",
           "type": "run.status_changed",
-          "at": "2026-09-29T02:44:40.990Z",
+          "at": "2026-09-29T03:03:24.175Z",
           "node": null,
-          "causation_id": "evt_ynp03pd5aba132a12ypcp7gpsf",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_dant6sk2q5cmn585nwhtmw58hg",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_qa4b9qvcc09vthejc23km12qg7",
+          "event_id": "evt_ryqrxrre1j26wae1ezd3pypw45",
           "type": "run.status_changed",
-          "at": "2026-09-29T02:44:41.013Z",
+          "at": "2026-09-29T03:03:24.203Z",
           "node": null,
-          "causation_id": "evt_rdrqhpgq24mcra5v28s6fayxq6",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_70416c09qfgr60rxmb44m3s56h",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_bje58e3rszdz2jfcefqszbe88g",
+          "event_id": "evt_eat653dkxdcx0dfzgd4he8c0r1",
           "type": "graph.resumed",
-          "at": "2026-09-29T02:44:41.029Z",
+          "at": "2026-09-29T03:03:24.218Z",
           "node": null,
-          "causation_id": "evt_qa4b9qvcc09vthejc23km12qg7",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_ryqrxrre1j26wae1ezd3pypw45",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_yxvsf6p5sr3er0q9yjvwmnrxw7",
+          "event_id": "evt_rd57qhyjj29sgaawcdq1ac2sx5",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:41.045Z",
+          "at": "2026-09-29T03:03:24.230Z",
           "node": "interrupt_for_human",
-          "causation_id": "evt_bje58e3rszdz2jfcefqszbe88g",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_eat653dkxdcx0dfzgd4he8c0r1",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_6xf5mj39103dq4verkjmsgkf6b",
+          "event_id": "evt_vdx2wc4w3hwtn7j384w1hhxehz",
           "type": "graph.node_completed",
-          "at": "2026-09-29T02:44:41.049Z",
+          "at": "2026-09-29T03:03:24.238Z",
           "node": "interrupt_for_human",
-          "causation_id": "evt_yxvsf6p5sr3er0q9yjvwmnrxw7",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_rd57qhyjj29sgaawcdq1ac2sx5",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_7f9283pq8vz7hjpb7d1dpd3a1b",
+          "event_id": "evt_zy7xz0b2fwm8fm3j22cenwgekz",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:41.084Z",
+          "at": "2026-09-29T03:03:24.261Z",
           "node": "finalize",
-          "causation_id": "evt_6xf5mj39103dq4verkjmsgkf6b",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_vdx2wc4w3hwtn7j384w1hhxehz",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_smj4bw9nzdttkz978j4dme6jft",
+          "event_id": "evt_hmn7j61z5vjtzay9214p51xm7a",
           "type": "graph.node_completed",
-          "at": "2026-09-29T02:44:41.089Z",
+          "at": "2026-09-29T03:03:24.265Z",
           "node": "finalize",
-          "causation_id": "evt_7f9283pq8vz7hjpb7d1dpd3a1b",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_zy7xz0b2fwm8fm3j22cenwgekz",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_d808gkhvntnrh6x0f34zwvczpt",
+          "event_id": "evt_6r7509e03752zmsdvtewg26rrb",
           "type": "graph.completed",
-          "at": "2026-09-29T02:44:41.117Z",
+          "at": "2026-09-29T03:03:24.288Z",
           "node": null,
-          "causation_id": "evt_smj4bw9nzdttkz978j4dme6jft",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_hmn7j61z5vjtzay9214p51xm7a",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_4tp179ewvykfdjqxqgb4c7p3c4",
+          "event_id": "evt_55abhxzntw14qs1jd1v9w3grfd",
           "type": "artifact.created",
-          "at": "2026-09-29T02:44:41.139Z",
+          "at": "2026-09-29T03:03:24.306Z",
           "node": null,
-          "causation_id": "evt_d808gkhvntnrh6x0f34zwvczpt",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_6r7509e03752zmsdvtewg26rrb",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         },
         {
-          "event_id": "evt_pzzee31z50n16gb66nazymne2n",
+          "event_id": "evt_p42v8wq5j0t4qme8te5363v9vq",
           "type": "run.status_changed",
-          "at": "2026-09-29T02:44:41.156Z",
+          "at": "2026-09-29T03:03:24.318Z",
           "node": null,
-          "causation_id": "evt_4tp179ewvykfdjqxqgb4c7p3c4",
-          "correlation_id": "run_4b20xcxryw9537680crvhxg26w"
+          "causation_id": "evt_55abhxzntw14qs1jd1v9w3grfd",
+          "correlation_id": "run_t623aq268rz0xrhwyrvt9j432f"
         }
       ],
       "causal_chain_intact": true
@@ -512,19 +512,19 @@
         "details": {
           "node": "record_intent",
           "cause_code": "NODE_FAILED",
-          "thread_id": "thr_2a3qrtzjpjyfmqr1dd7c26v8vh"
+          "thread_id": "thr_cc9tzgxqcd9k8jc0d8c5bzfqcj"
         }
       },
       "run": {
         "schema_version": 1,
-        "id": "run_my2py3zqszhkhgns90b0zggryf",
+        "id": "run_n8b7vq90r15w06b395wngygjtx",
         "root_goal": "P00 smoke: forced failure",
         "status": "FAILED",
-        "created_at": "2026-09-29T02:44:41.173Z",
-        "updated_at": "2026-09-29T02:44:41.298Z",
+        "created_at": "2026-09-29T03:03:24.331Z",
+        "updated_at": "2026-09-29T03:03:24.448Z",
         "policy_profile": "p00-default",
         "budget_profile": "p00-default",
-        "root_thread_id": "thr_2a3qrtzjpjyfmqr1dd7c26v8vh",
+        "root_thread_id": "thr_cc9tzgxqcd9k8jc0d8c5bzfqcj",
         "metadata": {
           "graph": "p00.smoke",
           "graph_version": "1"
@@ -532,68 +532,68 @@
       },
       "events": [
         {
-          "event_id": "evt_4fs9yzb42vcajhef9c60d85zxn",
+          "event_id": "evt_254vynjrrn38j35k59aqfycd6w",
           "type": "run.created",
-          "at": "2026-09-29T02:44:41.180Z",
+          "at": "2026-09-29T03:03:24.338Z",
           "node": null,
           "causation_id": null,
-          "correlation_id": "run_my2py3zqszhkhgns90b0zggryf"
+          "correlation_id": "run_n8b7vq90r15w06b395wngygjtx"
         },
         {
-          "event_id": "evt_30hgxgtcvd778f9ep5hr3zcd4j",
+          "event_id": "evt_9kkhnqtm1q21ab75gja9p49vkb",
           "type": "run.status_changed",
-          "at": "2026-09-29T02:44:41.195Z",
+          "at": "2026-09-29T03:03:24.347Z",
           "node": null,
-          "causation_id": "evt_4fs9yzb42vcajhef9c60d85zxn",
-          "correlation_id": "run_my2py3zqszhkhgns90b0zggryf"
+          "causation_id": "evt_254vynjrrn38j35k59aqfycd6w",
+          "correlation_id": "run_n8b7vq90r15w06b395wngygjtx"
         },
         {
-          "event_id": "evt_v9xcmm7wtxfy0h4n3bnkxf51kh",
+          "event_id": "evt_vp2wc8hpq735h9z1wx50aj9d9h",
           "type": "graph.started",
-          "at": "2026-09-29T02:44:41.215Z",
+          "at": "2026-09-29T03:03:24.360Z",
           "node": null,
-          "causation_id": "evt_30hgxgtcvd778f9ep5hr3zcd4j",
-          "correlation_id": "run_my2py3zqszhkhgns90b0zggryf"
+          "causation_id": "evt_9kkhnqtm1q21ab75gja9p49vkb",
+          "correlation_id": "run_n8b7vq90r15w06b395wngygjtx"
         },
         {
-          "event_id": "evt_nmvx7ndz9tn0ydrsq7m3sz0rcq",
+          "event_id": "evt_z43bffq3rsjsxm4pfan6wjwzm3",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:41.257Z",
+          "at": "2026-09-29T03:03:24.404Z",
           "node": "initialize_run",
-          "causation_id": "evt_v9xcmm7wtxfy0h4n3bnkxf51kh",
-          "correlation_id": "run_my2py3zqszhkhgns90b0zggryf"
+          "causation_id": "evt_vp2wc8hpq735h9z1wx50aj9d9h",
+          "correlation_id": "run_n8b7vq90r15w06b395wngygjtx"
         },
         {
-          "event_id": "evt_cb8q2rrqm0gkqx1jve4z3dq9xb",
+          "event_id": "evt_2n9t2vbe77n3ph0f0qrt60md6b",
           "type": "graph.node_completed",
-          "at": "2026-09-29T02:44:41.261Z",
+          "at": "2026-09-29T03:03:24.408Z",
           "node": "initialize_run",
-          "causation_id": "evt_nmvx7ndz9tn0ydrsq7m3sz0rcq",
-          "correlation_id": "run_my2py3zqszhkhgns90b0zggryf"
+          "causation_id": "evt_z43bffq3rsjsxm4pfan6wjwzm3",
+          "correlation_id": "run_n8b7vq90r15w06b395wngygjtx"
         },
         {
-          "event_id": "evt_1aqf55hy6jgqg24z9hhhrhb33f",
+          "event_id": "evt_a9qae34qq09n03ejafdtr7fb42",
           "type": "graph.node_started",
-          "at": "2026-09-29T02:44:41.282Z",
+          "at": "2026-09-29T03:03:24.428Z",
           "node": "record_intent",
-          "causation_id": "evt_cb8q2rrqm0gkqx1jve4z3dq9xb",
-          "correlation_id": "run_my2py3zqszhkhgns90b0zggryf"
+          "causation_id": "evt_2n9t2vbe77n3ph0f0qrt60md6b",
+          "correlation_id": "run_n8b7vq90r15w06b395wngygjtx"
         },
         {
-          "event_id": "evt_va62qt0a3fg1ghazy27kfzzwpt",
+          "event_id": "evt_pe8sbrze5xa1y2xkk7pxy7zzs0",
           "type": "graph.failed",
-          "at": "2026-09-29T02:44:41.293Z",
+          "at": "2026-09-29T03:03:24.441Z",
           "node": "record_intent",
-          "causation_id": "evt_1aqf55hy6jgqg24z9hhhrhb33f",
-          "correlation_id": "run_my2py3zqszhkhgns90b0zggryf"
+          "causation_id": "evt_a9qae34qq09n03ejafdtr7fb42",
+          "correlation_id": "run_n8b7vq90r15w06b395wngygjtx"
         },
         {
-          "event_id": "evt_jja74rmq1j2f4s5n0wv919d616",
+          "event_id": "evt_2e594a3q4pff5ptkdvwnsbh8wp",
           "type": "run.status_changed",
-          "at": "2026-09-29T02:44:41.301Z",
+          "at": "2026-09-29T03:03:24.453Z",
           "node": null,
-          "causation_id": "evt_va62qt0a3fg1ghazy27kfzzwpt",
-          "correlation_id": "run_my2py3zqszhkhgns90b0zggryf"
+          "causation_id": "evt_pe8sbrze5xa1y2xkk7pxy7zzs0",
+          "correlation_id": "run_n8b7vq90r15w06b395wngygjtx"
         }
       ],
       "causal_chain_intact": true

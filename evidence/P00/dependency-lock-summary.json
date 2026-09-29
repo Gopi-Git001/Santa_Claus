@@ -333,12 +333,12 @@
     {
       "name": "pnpm-lock consistent",
       "ok": true,
-      "detail": "✓ Lockfile passes supply-chain policies (verified 1m ago) Done in 31ms using pnpm v12.6.0"
+      "detail": "✓ Lockfile passes supply-chain policies (verified 19m ago) Done in 57ms using pnpm v12.6.0"
     },
     {
       "name": "uv.lock consistent",
       "ok": true,
-      "detail": "Resolved 14 packages in 1ms"
+      "detail": "Resolved 14 packages in 49ms"
     }
   ],
   "ok": true
