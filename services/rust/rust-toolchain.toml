@@ -1,0 +1,5 @@
+# Must match the pinned image in scripts/rust-check.ts (rust:1.98.1-slim-trixie).
+[toolchain]
+channel = "1.98.1"
+components = ["rustfmt", "clippy"]
+profile = "minimal"

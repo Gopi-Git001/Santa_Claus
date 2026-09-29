@@ -8,10 +8,13 @@ export interface RunResult {
   durationMs: number;
 }
 
+/** Windows `.cmd` shims that can only be launched through the shell. */
+const WINDOWS_CMD_SHIMS = new Set(["corepack", "pnpm", "npm", "npx"]);
+
 /**
  * Run a command synchronously and capture its output. Commands are given as an
- * argv array (never a shell string) except on Windows, where `.cmd` shims such
- * as corepack require the shell; arguments are fixed by our own scripts.
+ * argv array and spawned without a shell, except Windows `.cmd` shims (such as
+ * corepack), which require one; for those, shell metacharacters are refused.
  */
 export function run(
   argv: string[],
@@ -29,7 +32,7 @@ export function run(
     maxBuffer: 256 * 1024 * 1024,
   };
   const result =
-    process.platform === "win32"
+    process.platform === "win32" && WINDOWS_CMD_SHIMS.has(cmd)
       ? spawnSync([cmd, ...args].map(quoteWin).join(" "), { ...common, shell: true })
       : spawnSync(cmd, args, common);
   return {
