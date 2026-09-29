@@ -1,0 +1,71 @@
+{
+  "kind": "p00-hosted-ci-run",
+  "source": "gh run view 36514967772 (GitHub API)",
+  "commit": "07f34d8b092d27f2c4c5c2611ce01376cc49a74c",
+  "branch": "p00-foundation",
+  "event": "push",
+  "run_url": "https://github.com/Gopi-Git001/Santa_Claus/actions/runs/36514967772",
+  "status": "completed",
+  "conclusion": "failure",
+  "started_at": "2026-09-29T02:57:14Z",
+  "finished_at": "2026-09-29T02:58:51Z",
+  "jobs": [
+    {
+      "name": "contract-tests",
+      "conclusion": "success"
+    },
+    {
+      "name": "evidence-manifest",
+      "conclusion": "failure"
+    },
+    {
+      "name": "fmt-clippy-test-rust",
+      "conclusion": "success"
+    },
+    {
+      "name": "integration-postgres",
+      "conclusion": "success"
+    },
+    {
+      "name": "langgraph-smoke",
+      "conclusion": "success"
+    },
+    {
+      "name": "lint-ts",
+      "conclusion": "success"
+    },
+    {
+      "name": "lint-type-test-python",
+      "conclusion": "success"
+    },
+    {
+      "name": "persistence-resume",
+      "conclusion": "success"
+    },
+    {
+      "name": "security-baseline",
+      "conclusion": "success"
+    },
+    {
+      "name": "test-ts",
+      "conclusion": "success"
+    },
+    {
+      "name": "traceability-audit",
+      "conclusion": "failure"
+    },
+    {
+      "name": "typecheck-ts",
+      "conclusion": "success"
+    },
+    {
+      "name": "validate-lockfiles",
+      "conclusion": "success"
+    },
+    {
+      "name": "validate-spec-ledger",
+      "conclusion": "failure"
+    }
+  ],
+  "notes": "validate-spec-ledger and traceability-audit exit 2 (BLOCKED, P00-BLK-001, 0 errors); evidence-manifest: acceptance 21/21 rungs ok on ubuntu-24.04, verifier INCOMPLETE (open blocker; committed report describes the local evidence commit)"
+}

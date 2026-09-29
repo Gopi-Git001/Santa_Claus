@@ -579,30 +579,36 @@ add(
 const HostedCiSchema = z.object({
   commit: z.string(),
   run_url: z.url(),
-  conclusion: z.literal("success"),
+  conclusion: z.string(),
   jobs: z.array(z.object({ name: z.string(), conclusion: z.string() })),
 });
 const hosted = HostedCiSchema.safeParse(readJson<unknown>("hosted-ci.json"));
+const hostedRed = hosted.success
+  ? CI_JOBS.filter((j) => !hosted.data.jobs.some((x) => x.name === j && x.conclusion === "success"))
+  : [];
 const hostedOk =
   hosted.success &&
+  hosted.data.conclusion === "success" &&
   hosted.data.commit === evidenceCommit &&
-  CI_JOBS.every((j) => hosted.data.jobs.some((x) => x.name === j && x.conclusion === "success"));
+  hostedRed.length === 0;
 const allLayersClean = Object.values(layers).every(layerClean);
 const localCiGreen = log?.rungs.every((r) => r.ok) === true && allLayersClean;
 add(
   "CI/evidence",
   "all mandatory CI jobs green.",
-  hostedOk && localCiGreen ? "PASS" : localCiGreen ? "NOT_VERIFIED" : "FAIL",
+  hostedOk && localCiGreen ? "PASS" : hosted.success ? "FAIL" : localCiGreen ? "NOT_VERIFIED" : "FAIL",
   hostedOk
     ? `hosted run ${hosted.success ? hosted.data.run_url : ""}: all ${CI_JOBS.length} jobs success`
-    : localCiGreen
-      ? `all ${CI_JOBS.length} CI job equivalents pass locally (scripts/p00/acceptance.ts); no hosted-ci.json record of a hosted run for ${evidenceCommit?.slice(0, 7)} — branch not pushed (project-owner decision)`
-      : `local CI equivalents failing: ${
-          log?.rungs
-            .filter((r) => !r.ok)
-            .map((r) => r.rung)
-            .join(", ") ?? "acceptance-log.json missing"
-        }`,
+    : hosted.success
+      ? `hosted run ${hosted.data.run_url} (commit ${hosted.data.commit.slice(0, 7)}${hosted.data.commit === evidenceCommit ? "" : `, not the evidence commit ${evidenceCommit?.slice(0, 7)}`}) concluded ${hosted.data.conclusion}; not green: ${hostedRed.join(", ") || "none"}`
+      : localCiGreen
+        ? `all ${CI_JOBS.length} CI job equivalents pass locally (scripts/p00/acceptance.ts); no hosted-ci.json record of a hosted run for ${evidenceCommit?.slice(0, 7)} — branch not pushed (project-owner decision)`
+        : `local CI equivalents failing: ${
+            log?.rungs
+              .filter((r) => !r.ok)
+              .map((r) => r.rung)
+              .join(", ") ?? "acceptance-log.json missing"
+          }`,
 );
 const perf = readJson<Record<string, unknown>>("performance-baseline.json");
 const perfFields = [
