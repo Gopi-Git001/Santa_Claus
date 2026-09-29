@@ -1,6 +1,6 @@
 import type { EventId, RunId } from "@harness/contracts";
 import { HarnessError } from "@harness/contracts";
-import type { AnyEventEnvelope } from "./envelope.ts";
+import { type AnyEventEnvelope, type EventEnvelope, parseEvent } from "./envelope.ts";
 
 /**
  * Harness event interface. P00 defines the port and a durable PostgreSQL
@@ -8,7 +8,7 @@ import type { AnyEventEnvelope } from "./envelope.ts";
  */
 export interface EventSink {
   /** Durably append an event. Must reject duplicates of an existing event_id. */
-  append(event: AnyEventEnvelope): Promise<void>;
+  append(event: EventEnvelope): Promise<void>;
 }
 
 export interface EventLog extends EventSink {
@@ -20,11 +20,11 @@ export interface EventLog extends EventSink {
 export class InMemoryEventLog implements EventLog {
   readonly #events: AnyEventEnvelope[] = [];
 
-  async append(event: AnyEventEnvelope): Promise<void> {
+  async append(event: EventEnvelope): Promise<void> {
     if (this.#events.some((e) => e.event_id === event.event_id)) {
       throw new HarnessError("DUPLICATE_ID", `duplicate event_id ${event.event_id}`);
     }
-    this.#events.push(event);
+    this.#events.push(parseEvent(event));
   }
 
   async listByRun(runId: RunId): Promise<AnyEventEnvelope[]> {

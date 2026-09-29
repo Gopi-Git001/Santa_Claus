@@ -11,7 +11,7 @@ import {
   type RunStatus,
   type ThreadId,
 } from "@harness/contracts";
-import { type AnyEventEnvelope, type EventLog, parseEvent } from "@harness/events";
+import { type AnyEventEnvelope, type EventEnvelope, type EventLog, parseEvent } from "@harness/events";
 import type { Database, Queryable } from "./database.ts";
 
 /*
@@ -129,7 +129,7 @@ export class PgEventLog implements EventLog {
     this.#db = db;
   }
 
-  async append(event: AnyEventEnvelope): Promise<void> {
+  async append(event: EventEnvelope): Promise<void> {
     const e = parseEvent(event);
     await this.#db.query(
       `INSERT INTO harness_events (event_id, run_id, thread_id, event_type, schema_version, occurred_at,

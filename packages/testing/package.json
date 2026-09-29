@@ -1,0 +1,22 @@
+{
+  "name": "@harness/testing",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@harness/artifacts": "workspace:*",
+    "@harness/capabilities": "workspace:*",
+    "@harness/config": "workspace:*",
+    "@harness/contracts": "workspace:*",
+    "@harness/events": "workspace:*",
+    "@harness/kernel": "workspace:*",
+    "@harness/models": "workspace:*",
+    "@harness/observability": "workspace:*",
+    "@harness/orchestration": "workspace:*",
+    "@harness/persistence": "workspace:*",
+    "zod": "4.6.5"
+  }
+}
