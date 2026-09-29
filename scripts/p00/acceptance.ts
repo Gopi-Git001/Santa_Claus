@@ -24,7 +24,17 @@ const withDotEnv = ["node", "--env-file-if-exists=.env"];
 
 // Evidence from a previous run must not survive into this one. Hand-maintained
 // files (blockers, report) are kept.
-const KEEP = new Set(["blockers.json", "P00-REPORT.md"]);
+// Record uncommitted code changes BEFORE anything runs: evidence is only valid for committed code.
+const dirtyAtStart = run(["git", "status", "--porcelain", "--", ".", ":(exclude)evidence"], { cwd: root })
+  .stdout.split("\n")
+  .filter(Boolean);
+if (dirtyAtStart.length > 0) {
+  console.warn(
+    `WARNING: ${dirtyAtStart.length} uncommitted non-evidence change(s); the verifier will reject this evidence.`,
+  );
+}
+const KEEP = new Set(["blockers.json", "P00-REPORT.md", "hosted-ci.json"]);
+const observationsFile = join(EV, "failure-observations.jsonl");
 for (const f of readdirSync(EV)) if (!KEEP.has(f)) rmSync(join(EV, f), { recursive: true, force: true });
 
 interface LogEntry {
@@ -42,10 +52,15 @@ const log: LogEntry[] = [];
 function rung(
   name: string,
   argv: string[],
-  opts: { expected?: number[]; evidence?: string[]; textOut?: string } = {},
+  opts: {
+    expected?: number[];
+    evidence?: string[];
+    textOut?: string;
+    extraEnv?: Record<string, string>;
+  } = {},
 ): LogEntry {
   const started_at = new Date().toISOString();
-  const r = run(argv, { cwd: root, env });
+  const r = run(argv, { cwd: root, env: { ...env, ...opts.extraEnv } });
   const expected = opts.expected ?? [0];
   if (opts.textOut) {
     writeFileSync(
@@ -69,7 +84,7 @@ function rung(
   return entry;
 }
 
-const vitest = (project: string, out: string) =>
+const vitest = (project: string, out: string, extraEnv?: Record<string, string>) =>
   rung(
     `${project} tests`,
     [
@@ -83,9 +98,7 @@ const vitest = (project: string, out: string) =>
       "--reporter=json",
       `--outputFile.json=${join(EV, out)}`,
     ],
-    {
-      evidence: [out],
-    },
+    { evidence: [out], ...(extraEnv ? { extraEnv } : {}) },
   );
 
 // ---------------------------------------------------------------- ladder
@@ -113,7 +126,7 @@ rung("generated spec docs current", ["node", "scripts/generate-spec-docs.ts", "-
 vitest("unit", "unit-tests.json");
 vitest("contract", "contract-tests.json");
 vitest("integration", "integration-tests.json");
-vitest("failure", "failure-tests.vitest.json");
+vitest("failure", "failure-tests.vitest.json", { HARNESS_FAILURE_OBSERVATIONS: observationsFile });
 vitest("e2e", "e2e-tests.json");
 rung(
   "python lint/type/test",
@@ -192,9 +205,22 @@ rung("security: committed secrets", ["node", "scripts/check-secrets.ts"], {
     testResults: Array<{ assertionResults: Array<{ title: string; status: string; duration?: number }> }>;
   };
   const results = raw.testResults.flatMap((f) => f.assertionResults);
+  // Classifications the tests actually observed (written by tests/failure/scenarios.ts#observe).
+  const observations = existsSync(observationsFile)
+    ? readFileSync(observationsFile, "utf8")
+        .split("\n")
+        .filter(Boolean)
+        .map((l) => JSON.parse(l) as { id: string; observed: string })
+    : [];
   const scenarios = FAILURE_SCENARIOS.map((s) => {
     const r = results.find((x) => x.title.startsWith(`${s.id} `));
-    return { ...s, test: r?.title ?? null, status: r?.status ?? "missing", duration_ms: r?.duration ?? null };
+    return {
+      ...s,
+      observed: observations.filter((o) => o.id === s.id).map((o) => o.observed),
+      test: r?.title ?? null,
+      status: r?.status ?? "missing",
+      duration_ms: r?.duration ?? null,
+    };
   });
   writeFileSync(
     join(EV, "failure-tests.json"),
@@ -238,7 +264,9 @@ writeFileSync(
       git: {
         branch: gitOut("rev-parse", "--abbrev-ref", "HEAD"),
         commit: gitOut("rev-parse", "HEAD"),
-        dirty_files: gitOut("status", "--porcelain").split("\n").filter(Boolean).length,
+        // Uncommitted non-evidence changes when acceptance started (must be 0 for valid evidence).
+        dirty_files: dirtyAtStart.length,
+        dirty_paths: dirtyAtStart.slice(0, 20),
       },
       node: process.version,
       pnpm: version([...PNPM, "--version"]),

@@ -27,6 +27,8 @@ export interface ValidationOptions {
   invariantRange: { first: number; last: number };
   /** Resolves a `path` or `path#title` reference. Injected so validation stays pure. */
   refExists: (ref: string) => boolean;
+  /** SHA-256 of a repository file, or undefined if absent. Used to bind the ledger to its catalog. */
+  fileSha256?: (path: string) => string | undefined;
 }
 
 export const P00_OPTIONS: Omit<ValidationOptions, "refExists"> = {
@@ -194,6 +196,30 @@ export function validateLedger(
     caps.map((c) => c.id),
     range(opts.capabilityRange.first, opts.capabilityRange.last).map(cid),
   );
+  if (opts.fileSha256 !== undefined) {
+    const actual = opts.fileSha256(ledger.catalog.path);
+    if (actual === undefined)
+      issues.push({
+        severity: "error",
+        code: "CATALOG_MISSING",
+        subject: ledger.catalog.path,
+        message: `authoritative catalog ${ledger.catalog.path} not found`,
+      });
+    else if (actual !== ledger.catalog.sha256)
+      issues.push({
+        severity: "error",
+        code: "CATALOG_MISMATCH",
+        subject: ledger.catalog.path,
+        message: `catalog ${ledger.catalog.path} does not match the ledger's recorded sha256`,
+      });
+  }
+  if (!caps.some((c) => c.owning_phase === "P00"))
+    issues.push({
+      severity: "blocked",
+      code: "NO_P00_REQUIREMENTS",
+      message:
+        "the ledger assigns no requirement to P00; the P00 mapping criterion would be vacuous — confirm with the project owner",
+    });
   const domainIds = new Set(context.domains.domains.map((d) => d.id));
   const phaseOrder = new Map(context.phases.phases.map((p) => [p.id, Number(p.id.slice(1))]));
   const byId = new Map(caps.map((c) => [c.id, c]));

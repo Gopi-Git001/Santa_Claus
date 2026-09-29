@@ -7,7 +7,7 @@
       "purpose": "Specification, invariants, traceability, repository/tooling foundation",
       "prerequisites": [],
       "owned_capability_ids": null,
-      "entry_criteria": ["MASTER_PROJECT_WORKFLOW.md v1.0 architecture baseline exists"],
+      "entry_criteria": ["MASTER_PROJECT_WORKFLOW.md §24: begin P00 after the v1.0 architecture baseline"],
       "exit_criteria": [
         "16 domains documented.",
         "P00--P18 registry valid.",
@@ -57,7 +57,12 @@
         "evidence/P00/P00-REPORT.md"
       ],
       "status": "IN_PROGRESS",
-      "sources": ["P00_FOUNDATION_SPECIFICATION.md §16", "P00_FOUNDATION_SPECIFICATION.md §34"]
+      "sources": [
+        "P00_FOUNDATION_SPECIFICATION.md header ('Phase: P00 of P00--P18'): first phase, therefore no prerequisite phase",
+        "MASTER_PROJECT_WORKFLOW.md §24 (entry criterion)",
+        "P00_FOUNDATION_SPECIFICATION.md §16 (evidence requirements)",
+        "P00_FOUNDATION_SPECIFICATION.md §34 (exit criteria, verbatim)"
+      ]
     },
     {
       "id": "P01",

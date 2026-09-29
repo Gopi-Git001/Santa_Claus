@@ -1,6 +1,5 @@
-import { spawnSync } from "node:child_process";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { FilesystemArtifactStore } from "@harness/artifacts";
@@ -19,6 +18,7 @@ import {
 import { createSmokeHarness, echoCapability, type SmokeHarness } from "@harness/testing";
 import { type CapabilityRecord, validateLedger, validatePhases } from "@harness/traceability";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { runSmokeChild } from "../e2e/child.ts";
 import { testConfig } from "../support/env.ts";
 import { FAILURE_SCENARIOS, observe } from "./scenarios.ts";
 
@@ -97,9 +97,9 @@ describe("P00 failure scenarios (§33)", () => {
   });
 
   it("F01 invalid configuration fails clearly with CONFIG_INVALID", async () => {
-    expect(await codeOf(() => loadConfig({ HARNESS_ENV: "prod", DATABASE_URL: "nope" }))).toBe(
-      "CONFIG_INVALID",
-    );
+    expect(
+      observe("F01", await codeOf(() => loadConfig({ HARNESS_ENV: "prod", DATABASE_URL: "nope" }))),
+    ).toBe("CONFIG_INVALID");
   });
 
   it("F02 PostgreSQL unavailable at startup gives DB_UNAVAILABLE without leaking credentials", async () => {
@@ -116,7 +116,7 @@ describe("P00 failure scenarios (§33)", () => {
       secret,
     );
     const cfg = testConfig(url, { HARNESS_DB_CONNECT_TIMEOUT_MS: "2000" });
-    expect(await codeOf(createSmokeHarness({ config: cfg }))).toBe("DB_UNAVAILABLE");
+    expect(observe("F02", await codeOf(createSmokeHarness({ config: cfg })))).toBe("DB_UNAVAILABLE");
   });
 
   /*
@@ -185,7 +185,9 @@ describe("P00 failure scenarios (§33)", () => {
       { graph: "g", graph_version: "1" },
       { run_id: newId("RunId"), trace_id: newTraceId() },
     );
-    expect(await codeOf(() => parseEvent({ ...e, payload: { graph: 1 } }))).toBe("PAYLOAD_INVALID");
+    expect(observe("F04", await codeOf(() => parseEvent({ ...e, payload: { graph: 1 } })))).toBe(
+      "PAYLOAD_INVALID",
+    );
     expect(await codeOf(() => parseEvent({ ...e, trace_id: "not-a-trace" }))).toBe("PAYLOAD_INVALID");
     expect(await codeOf(() => parseEvent(null))).toBe("PAYLOAD_INVALID");
   });
@@ -193,11 +195,12 @@ describe("P00 failure scenarios (§33)", () => {
   it("F05 duplicate capability ID is rejected as DUPLICATE_ID (registry and ledger)", async () => {
     const reg = new CapabilityRegistry();
     reg.register(echoCapability);
-    expect(await codeOf(() => reg.register(echoCapability))).toBe("DUPLICATE_ID");
+    expect(observe("F05", await codeOf(() => reg.register(echoCapability)))).toBe("DUPLICATE_ID");
     const issues = validateLedger(
       {
         schema_version: 1,
         source: "fixture",
+        catalog: { path: "fixture-catalog.md", sha256: "a".repeat(64) },
         capabilities: [fixtureCap("C901"), fixtureCap("C901"), fixtureCap("C902")],
       },
       { domains: fixtureDomains, phases: fixturePhases },
@@ -211,12 +214,15 @@ describe("P00 failure scenarios (§33)", () => {
       {
         schema_version: 1,
         source: "fixture",
+        catalog: { path: "fixture-catalog.md", sha256: "a".repeat(64) },
         capabilities: [fixtureCap("C901", { dependencies: ["C999"] }), fixtureCap("C902")],
       },
       { domains: fixtureDomains, phases: fixturePhases },
       fixtureOpts,
     );
-    expect(issues.map((i) => i.code)).toContain("INVALID_DEPENDENCY");
+    expect(issues.map((i) => i.code)).toContain(
+      observe("F06", issues.find((i) => i.code === "INVALID_DEPENDENCY")?.code ?? "none"),
+    );
   });
 
   it("F07 invalid phase reference is reported as INVALID_PHASE_REF", () => {
@@ -224,12 +230,15 @@ describe("P00 failure scenarios (§33)", () => {
       {
         schema_version: 1,
         source: "fixture",
+        catalog: { path: "fixture-catalog.md", sha256: "a".repeat(64) },
         capabilities: [fixtureCap("C901", { owning_phase: "P42" }), fixtureCap("C902")],
       },
       { domains: fixtureDomains, phases: fixturePhases },
       fixtureOpts,
     );
-    expect(issues.map((i) => i.code)).toContain("INVALID_PHASE_REF");
+    expect(issues.map((i) => i.code)).toContain(
+      observe("F07", issues.find((i) => i.code === "INVALID_PHASE_REF")?.code ?? "none"),
+    );
     const badPhases = { ...fixturePhases, phases: [fixturePhase("P00", []), fixturePhase("P01", ["P07"])] };
     expect(validatePhases(badPhases, fixtureOpts).map((i) => i.code)).toContain("INVALID_PHASE_REF");
   });
@@ -244,7 +253,7 @@ describe("P00 failure scenarios (§33)", () => {
           { decision: "approve", responder: "x" },
         ),
       ),
-    ).toBe("THREAD_MISMATCH");
+    ).toBe(observe("F08", "THREAD_MISMATCH"));
     expect(
       await codeOf(
         h.resumeRun({ ...a.identity, thread_id: newId("ThreadId") }, { decision: "approve", responder: "x" }),
@@ -261,6 +270,9 @@ describe("P00 failure scenarios (§33)", () => {
     const snap = await h.workflow.inspect(identity.thread_id);
     expect(snap?.pending_interrupt?.node).toBe("interrupt_for_human");
     expect(snap?.state["outcome"]).toBeNull();
+    expect((await pgRepositories(t.db).runs.get(identity.run_id))?.status).toBe(
+      observe("F09", "INTERRUPTED"),
+    );
     const done = await h.startRun({ goal: "F09-done", approval_required: false });
     expect(await codeOf(h.resumeRun(done.identity, { decision: "approve", responder: "x" }))).toBe(
       "GRAPH_NOT_INTERRUPTED",
@@ -280,7 +292,7 @@ describe("P00 failure scenarios (§33)", () => {
     const blob = join(root, "blobs", "sha256", rec.content_hash.digest.slice(0, 2), rec.content_hash.digest);
     await writeFile(blob, "tampered");
     expect((await store.verifyHash(rec.artifact_id)).ok).toBe(false);
-    expect(await codeOf(store.get(rec.artifact_id))).toBe("ARTIFACT_HASH_MISMATCH");
+    expect(observe("F10", await codeOf(store.get(rec.artifact_id)))).toBe("ARTIFACT_HASH_MISMATCH");
     rmSync(blob);
     expect(await codeOf(store.get(rec.artifact_id))).toBe("ARTIFACT_HASH_MISMATCH");
   });
@@ -289,7 +301,7 @@ describe("P00 failure scenarios (§33)", () => {
     const dir = mkdtempSync(join(tmpdir(), "f11-"));
     const notADir = join(dir, "file");
     writeFileSync(notADir, "x");
-    expect(await codeOf(FilesystemArtifactStore.open(notADir))).toBe("STORAGE_UNAVAILABLE");
+    expect(observe("F11", await codeOf(FilesystemArtifactStore.open(notADir)))).toBe("STORAGE_UNAVAILABLE");
     expect(await codeOf(FilesystemArtifactStore.open(join(dir, "missing")))).toBe("STORAGE_UNAVAILABLE");
     const root = join(dir, "store");
     const store = await FilesystemArtifactStore.open(root, { create: true });
@@ -317,6 +329,7 @@ describe("P00 failure scenarios (§33)", () => {
     expect(raw).not.toContain(token);
     expect(raw).not.toContain(pw);
     expect(raw).toContain("[REDACTED]");
+    observe("F12", "REDACTED");
   });
 
   it("F13 unsupported schema versions are UNSUPPORTED_SCHEMA_VERSION", async () => {
@@ -328,13 +341,18 @@ describe("P00 failure scenarios (§33)", () => {
       { graph: "g", graph_version: "1" },
       { run_id: newId("RunId"), trace_id: newTraceId() },
     );
-    expect(await codeOf(() => parseEvent({ ...e, schema_version: 2 }))).toBe("UNSUPPORTED_SCHEMA_VERSION");
+    expect(observe("F13", await codeOf(() => parseEvent({ ...e, schema_version: 2 })))).toBe(
+      "UNSUPPORTED_SCHEMA_VERSION",
+    );
   });
 
   it("F14 a forced node failure becomes a controlled NODE_FAILED graph error with diagnostics", async () => {
     const before = await t.db.query<{ id: string }>("SELECT id FROM harness_runs");
     expect(
-      await codeOf(h.startRun({ goal: "F14", approval_required: false, fail_at_node: "approval_gate" })),
+      observe(
+        "F14",
+        await codeOf(h.startRun({ goal: "F14", approval_required: false, fail_at_node: "approval_gate" })),
+      ),
     ).toBe("NODE_FAILED");
     const r = await t.db.query<{ id: string; status: string }>(
       "SELECT id, status FROM harness_runs WHERE root_goal = 'F14'",
@@ -355,7 +373,6 @@ describe("P00 failure scenarios (§33)", () => {
   });
 
   it("F15 process restart followed by persisted-state verification", async () => {
-    const script = join(import.meta.dirname, "..", "e2e", "smoke-process.ts");
     const env = {
       PATH: process.env["PATH"],
       SystemRoot: process.env["SystemRoot"],
@@ -364,23 +381,21 @@ describe("P00 failure scenarios (§33)", () => {
       HARNESS_ARTIFACT_ROOT: mkdtempSync(join(tmpdir(), "f15-")),
       HARNESS_LOG_LEVEL: "error",
     };
-    const r = spawnSync(process.execPath, [script, "start"], { env, encoding: "utf8", timeout: 60_000 });
-    expect(r.status, r.stderr).toBe(0);
-    const { identity, pid } = JSON.parse(r.stdout.trim().split("\n").at(-1) ?? "{}") as {
-      identity: { run_id: string; thread_id: string };
-      pid: number;
-    };
-    expect(pid).not.toBe(process.pid);
+    const started = runSmokeChild(env, "start");
+    expect(started.killed, "process must be killed after checkpointing").toBe(true);
+    expect(started.pid).not.toBe(process.pid);
+    const identity = started["identity"] as { run_id: string; thread_id: string };
     // Verified from this (different) process purely from durable state.
     const snap = await h.workflow.inspect(identity.thread_id as never);
     expect(snap?.pending_interrupt?.node).toBe("interrupt_for_human");
     expect(snap?.state["intent"]).toBe("intent:restart proof");
-    expect((await pgRepositories(t.db).runs.get(identity.run_id as never))?.status).toBe("INTERRUPTED");
+    expect((await pgRepositories(t.db).runs.get(identity.run_id as never))?.status).toBe(
+      observe("F15", "INTERRUPTED"),
+    );
     const cp = await t.db.query<{ n: string }>(
       "SELECT count(*)::text AS n FROM harness_checkpoints.checkpoints WHERE thread_id = $1",
       [identity.thread_id],
     );
     expect(Number(cp.rows[0]?.n)).toBeGreaterThan(0);
-    await readFile(script); // the child script exists and is the one exercised
   });
 });

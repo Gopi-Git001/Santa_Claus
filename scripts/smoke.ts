@@ -27,7 +27,7 @@ const { config, source } = loadConfig({
   HARNESS_ARTIFACT_ROOT: join(tmpdir(), `harness-smoke-${Date.now()}`),
   HARNESS_LOG_LEVEL: "warn",
 });
-const harness = await createSmokeHarness({ config });
+const harness = await createSmokeHarness({ config, configSource: source });
 const repos = pgRepositories(t.db);
 const checkpoints = async (thread: string) =>
   Number(
@@ -124,6 +124,18 @@ const evidence = {
   graph: { name: harness.workflow.name, version: harness.workflow.version },
   config_source: source, // variable names only, never values
   checkpoint_store: `postgresql schema ${config.langgraph.checkpoint_schema}`,
+  // The checkpoint tables are created by the LangGraph saver's own setup(), outside the harness
+  // migration runner (ADR-0004); record its schema version so drift is visible in evidence.
+  checkpoint_store_schema_version: Number(
+    (
+      await t.db.query<{ v: number }>(
+        `SELECT max(v) AS v FROM ${config.langgraph.checkpoint_schema}.checkpoint_migrations`,
+      )
+    ).rows[0]?.v,
+  ),
+  harness_schema_version: Number(
+    (await t.db.query<{ v: number }>("SELECT max(version) AS v FROM harness_schema_migrations")).rows[0]?.v,
+  ),
   isolated_database: true,
   scenarios,
   failure,

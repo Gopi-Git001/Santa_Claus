@@ -1,7 +1,8 @@
 /**
  * Independent P00 verifier (P00 spec §25, §34).
  *
- *   node scripts/p00/verify.ts
+ *   node scripts/p00/verify.ts               full verification (writes verdict + seal)
+ *   node scripts/p00/verify.ts --check-seal  re-validate final-manifest.json only
  *
  * Does not trust any single "green" signal. It re-reads every evidence file,
  * re-validates the manifest hashes, re-runs the traceability and boundary
@@ -11,7 +12,9 @@
  * if every item is PASS. Writes evidence/P00/verifier-result.json and a sealed
  * final-manifest.json. Exit code 0 only when VERIFIED.
  */
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { buildManifest, validateManifest } from "@harness/artifacts";
 import {
@@ -23,11 +26,65 @@ import {
   validateLedger,
   validatePhases,
 } from "@harness/traceability";
+import { z } from "zod";
+import { FAILURE_SCENARIOS } from "../../tests/failure/scenarios.ts";
 import { checkBoundaries } from "../lib/boundaries.ts";
 import { readEnvFile } from "../lib/dev-env.ts";
 
 const root = join(import.meta.dirname, "..", "..");
 const EV = join(root, "evidence", "P00");
+
+// Pinned expectations (change deliberately, with the graph/toolchain they describe).
+const SMOKE_NODES_STRAIGHT_THROUGH = 4; // initialize_run, record_intent, approval_gate, finalize
+const PINNED_RUSTC = "rustc 1.98.1";
+const CI_JOBS = [
+  "validate-lockfiles",
+  "validate-spec-ledger",
+  "typecheck-ts",
+  "lint-ts",
+  "test-ts",
+  "lint-type-test-python",
+  "fmt-clippy-test-rust",
+  "contract-tests",
+  "integration-postgres",
+  "langgraph-smoke",
+  "persistence-resume",
+  "security-baseline",
+  "traceability-audit",
+  "evidence-manifest",
+];
+/** Files that are not machine evidence of the acceptance run itself. */
+const NOT_IN_RUN_MANIFEST = new Set([
+  "manifest.json",
+  "P00-REPORT.md",
+  "verifier-result.json",
+  "final-manifest.json",
+  "blockers.json",
+  "hosted-ci.json",
+]);
+const evidenceFiles = () => readdirSync(EV).filter((f) => statSync(join(EV, f)).isFile());
+
+if (process.argv.includes("--check-seal")) {
+  const seal = existsSync(join(EV, "final-manifest.json"))
+    ? (JSON.parse(readFileSync(join(EV, "final-manifest.json"), "utf8")) as unknown)
+    : undefined;
+  const issues =
+    seal === undefined ? [{ path: "final-manifest.json", problem: "missing" }] : validateManifest(EV, seal);
+  const listed = new Set(((seal as { files?: Array<{ path: string }> })?.files ?? []).map((x) => x.path));
+  const unsealed = evidenceFiles().filter((x) => x !== "final-manifest.json" && !listed.has(x));
+  for (const i of issues) console.error(`SEAL ${i.path}: ${i.problem}`);
+  for (const u of unsealed) console.error(`SEAL ${u}: not covered by seal`);
+  console.log(`seal: ${issues.length + unsealed.length === 0 ? "INTACT" : "BROKEN"}`);
+  process.exit(issues.length + unsealed.length === 0 ? 0 : 1);
+}
+
+const git = (...a: string[]) => {
+  try {
+    return execFileSync("git", a, { cwd: root, encoding: "utf8" }).trim();
+  } catch {
+    return undefined;
+  }
+};
 type Status = "PASS" | "FAIL" | "BLOCKED" | "NOT_VERIFIED";
 interface Criterion {
   section: string;
@@ -105,13 +162,21 @@ const rust = readJson<{
   steps: Array<{ name: string; exit_code: number }>;
   base_image: string;
 }>("rust-checks.json");
-const failures = readJson<{ scenarios: Array<{ id: string; status: string }>; all_passed: boolean }>(
-  "failure-tests.json",
-);
-const blockers = readJson<{ blockers: Array<{ id: string; status: string; title: string }> }>(
-  "blockers.json",
-);
-const openBlockers = blockers?.blockers.filter((b) => b.status === "OPEN") ?? [];
+const failures = readJson<{
+  scenarios: Array<{ id: string; status: string; expected: string; observed: string[] }>;
+  all_passed: boolean;
+}>("failure-tests.json");
+// The blocker register must exist and be valid. Anything not explicitly RESOLVED is open.
+const BlockerRegisterSchema = z.object({
+  schema_version: z.literal(1),
+  blockers: z.array(
+    z.object({ id: z.string().min(1), status: z.string().min(1), title: z.string().min(1) }).loose(),
+  ),
+});
+const blockerRegister = BlockerRegisterSchema.safeParse(readJson<unknown>("blockers.json"));
+const openBlockers = blockerRegister.success
+  ? blockerRegister.data.blockers.filter((b) => b.status !== "RESOLVED")
+  : [{ id: "BLOCKER-REGISTER", status: "INVALID", title: "evidence/P00/blockers.json missing or invalid" }];
 
 // ---------------------------------------------------------------- independent re-validation
 const refExists = (ref: string) => {
@@ -119,7 +184,11 @@ const refExists = (ref: string) => {
   const full = join(root, path);
   return existsSync(full) && (anchor === undefined || readFileSync(full, "utf8").includes(anchor));
 };
-const opts = { ...P00_OPTIONS, refExists };
+const fileSha256 = (path: string) => {
+  const full = join(root, path);
+  return existsSync(full) ? createHash("sha256").update(readFileSync(full)).digest("hex") : undefined;
+};
+const opts = { ...P00_OPTIONS, refExists, fileSha256 };
 const spec = (p: string) => JSON.parse(readFileSync(join(root, p), "utf8")) as unknown;
 const domainsRaw = spec("specs/domains/domains.json");
 const phasesRaw = spec("specs/phases/phases.json");
@@ -161,11 +230,29 @@ add(
   phaseIssues.some((i) => i.severity === "error") ? "FAIL" : phaseIssues.length ? "BLOCKED" : "PASS",
   `19 phases structurally valid; ${phaseIssues.filter((i) => i.severity === "blocked").length} field(s) pending the authoritative specification/catalog (P00-BLK-001)`,
 );
+// An "enforced" invariant must be backed by at least one test ref that actually PASSED in
+// this run's results (a title that merely exists in a file is not enough).
+const invariantsRaw = spec("specs/invariants/invariants.json") as {
+  invariants: Array<{ id: string; p00_scope: string; p00_refs: string[] }>;
+};
+const allLayers = Object.values(layers);
+const refPassed = (ref: string) => {
+  const [path, anchor] = ref.split("#", 2) as [string, string | undefined];
+  if (anchor === undefined) return false;
+  return allLayers.some((v) => testPassed(v, path, anchor));
+};
+const unproven = invariantsRaw.invariants
+  .filter((i) => i.p00_scope === "enforced")
+  .filter((i) => {
+    const testRefs = i.p00_refs.filter((r) => r.includes("#") && /(^tests\/|\/test\/)/.test(r));
+    return testRefs.length === 0 || !testRefs.every(refPassed);
+  })
+  .map((i) => i.id);
 add(
   "Architecture",
   "architectural invariants registered.",
-  pass(invariantIssues.length === 0),
-  `INV-001..INV-020; ${invariantIssues.length} issue(s); all refs resolved`,
+  pass(invariantIssues.length === 0 && unproven.length === 0),
+  `INV-001..INV-020; ${invariantIssues.length} registry issue(s); enforced invariants without passing tests: ${unproven.join(", ") || "none"}`,
 );
 add(
   "Architecture",
@@ -230,7 +317,7 @@ add(
     rust?.ok === true &&
       rust.fresh_build &&
       ["fmt", "clippy", "test"].every((n) => rust.steps.some((s) => s.name === n && s.exit_code === 0)) &&
-      rust.versions.some((v) => v.startsWith("rustc 1.98.1")),
+      rust.versions.some((v) => v.startsWith(PINNED_RUSTC)),
   ),
   rust ? `${rust.versions.join("; ")}; fresh=${rust.fresh_build}` : "rust-checks.json missing",
 );
@@ -255,7 +342,11 @@ const obs = (straight?.["stream_observations"] as unknown[] | undefined)?.length
 add(
   "Runtime",
   "streaming/event observation works.",
-  pass(obs === 4 && straight?.["causal_chain_intact"] === true && gated?.["causal_chain_intact"] === true),
+  pass(
+    obs === SMOKE_NODES_STRAIGHT_THROUGH &&
+      straight?.["causal_chain_intact"] === true &&
+      gated?.["causal_chain_intact"] === true,
+  ),
   `${obs} streamed node updates; causal chains intact=${String(straight?.["causal_chain_intact"])}/${String(gated?.["causal_chain_intact"])}`,
 );
 add(
@@ -263,10 +354,11 @@ add(
   "durable checkpoint path works.",
   pass(
     pr?.checks["checkpoint_persisted_before_restart"] === true &&
-      (pr?.checkpoint_store ?? "").includes("postgresql") &&
-      Number(gated?.["checkpoint_rows_at_interrupt"]) > 0,
+      Number(gated?.["checkpoint_rows_at_interrupt"]) > 0 &&
+      testPassed(layers.integration, "langgraph-postgres.test.ts", "writes durable checkpoints") &&
+      testPassed(layers.failure, "p00-failures.test.ts", "F15"),
   ),
-  `PostgreSQL checkpoint rows at interrupt=${String(gated?.["checkpoint_rows_at_interrupt"])}`,
+  `PostgreSQL checkpoint rows at interrupt=${String(gated?.["checkpoint_rows_at_interrupt"])}; checkpoint-row tests passed`,
 );
 add(
   "Runtime",
@@ -274,6 +366,7 @@ add(
   pass(
     [
       "three_distinct_processes",
+      "checkpointing_process_killed_abruptly",
       "interrupt_pending_after_restart",
       "resumed_to_completion",
       "causal_chain_intact_across_processes",
@@ -345,11 +438,20 @@ const requiredEvidence = [
   "persistence-resume.json",
   "failure-tests.json",
   "traceability-audit.json",
+  "performance-baseline.json",
+  "acceptance-log.json",
 ];
-const manifestIssues =
-  manifest === undefined
+// Every machine-evidence file present must be covered by the run manifest (nothing unhashed).
+const listedInManifest = new Set(
+  ((manifest as { files?: Array<{ path: string }> })?.files ?? []).map((x) => x.path),
+);
+const unlisted = evidenceFiles().filter((x) => !NOT_IN_RUN_MANIFEST.has(x) && !listedInManifest.has(x));
+const manifestIssues = [
+  ...(manifest === undefined
     ? [{ path: "manifest.json", problem: "missing" }]
-    : validateManifest(EV, manifest, requiredEvidence);
+    : validateManifest(EV, manifest, requiredEvidence)),
+  ...unlisted.map((path) => ({ path, problem: "not_in_manifest" })),
+];
 add(
   "Persistence/artifacts",
   "evidence manifest validates.",
@@ -381,7 +483,7 @@ const secretValues = [
   process.env["DATABASE_URL"],
   urlPassword(process.env["DATABASE_URL"]),
 ].filter((v): v is string => typeof v === "string" && v.length >= 8);
-const leaks = readdirSync(EV).filter((file) => {
+const leaks = evidenceFiles().filter((file) => {
   const text = readFileSync(join(EV, file), "utf8");
   return secretValues.some((s) => text.includes(s));
 });
@@ -393,12 +495,24 @@ add(
   ),
   `redaction fixture + F12 passed; real DB secret found in ${leaks.length} evidence file(s) (${secretValues.length} secret value(s) checked)`,
 );
+// Each §33 scenario must have passed AND recorded an observed classification equal to the expected one.
+const scenarioIds = FAILURE_SCENARIOS.map((s) => s.id);
+const scenarioMismatch = scenarioIds.filter((id) => {
+  const s = failures?.scenarios.find((x) => x.id === id);
+  const expected = FAILURE_SCENARIOS.find((x) => x.id === id)?.expected.split(" ")[0];
+  return (
+    s === undefined ||
+    s.status !== "passed" ||
+    s.observed.length === 0 ||
+    !s.observed.every((o) => o === expected)
+  );
+});
 add(
   "Security/quality",
   "failure suite passes.",
-  pass(failures?.all_passed === true && failures.scenarios.length === 15 && layerClean(layers.failure)),
+  pass(failures?.all_passed === true && scenarioMismatch.length === 0 && layerClean(layers.failure)),
   failures
-    ? `${failures.scenarios.filter((s) => s.status === "passed").length}/15 scenarios passed`
+    ? `${failures.scenarios.filter((s) => s.status === "passed").length}/${scenarioIds.length} passed; expected≠observed or missing: ${scenarioMismatch.join(", ") || "none"}`
     : "failure-tests.json missing",
 );
 add(
@@ -422,28 +536,100 @@ add(
 );
 
 // ---------------------------------------------------------------- §34 CI/evidence
+// Evidence must describe the code being verified: one commit across all evidence, a clean
+// (non-evidence) tree at acceptance time, and only evidence/ changed between that commit and HEAD.
+const envJson = readJson<{ git: { commit: string; dirty_files: number } }>("environment.json");
+const evidenceCommit = envJson?.git.commit;
+const manifestCommit = (manifest as { git_commit?: string } | undefined)?.git_commit;
+const head = git("rev-parse", "HEAD");
+const changedSince =
+  evidenceCommit === undefined
+    ? undefined
+    : git("diff", "--name-only", evidenceCommit, "HEAD")?.split("\n").filter(Boolean);
+const dirtyNow = git("status", "--porcelain", "--", ".", ":(exclude)evidence")?.split("\n").filter(Boolean);
+const commitProblems = [
+  evidenceCommit === undefined ? "environment.json has no commit" : "",
+  manifestCommit !== evidenceCommit ? `manifest commit ${manifestCommit} ≠ ${evidenceCommit}` : "",
+  fresh !== undefined && fresh.source.commit !== evidenceCommit
+    ? `fresh-env commit ${fresh.source.commit} ≠ ${evidenceCommit}`
+    : "",
+  (envJson?.git.dirty_files ?? 1) !== 0
+    ? `${envJson?.git.dirty_files} non-evidence file(s) dirty during acceptance`
+    : "",
+  changedSince === undefined || changedSince.some((f) => !f.startsWith("evidence/"))
+    ? `code changed since evidence commit: ${(changedSince ?? ["unknown"])
+        .filter((f) => !f.startsWith("evidence/"))
+        .slice(0, 5)
+        .join(", ")}`
+    : "",
+  (dirtyNow?.length ?? 1) !== 0
+    ? `working tree has ${dirtyNow?.length ?? "?"} uncommitted non-evidence change(s)`
+    : "",
+].filter(Boolean);
+add(
+  "CI/evidence",
+  "evidence is bound to the verified commit (supports all criteria).",
+  pass(commitProblems.length === 0),
+  commitProblems.length
+    ? commitProblems.join("; ")
+    : `evidence commit ${evidenceCommit} (HEAD ${head}); only evidence/ changed since`,
+);
+
+// Hosted CI: proven only by an explicit record of a hosted run for the evidence commit.
+const HostedCiSchema = z.object({
+  commit: z.string(),
+  run_url: z.url(),
+  conclusion: z.literal("success"),
+  jobs: z.array(z.object({ name: z.string(), conclusion: z.string() })),
+});
+const hosted = HostedCiSchema.safeParse(readJson<unknown>("hosted-ci.json"));
+const hostedOk =
+  hosted.success &&
+  hosted.data.commit === evidenceCommit &&
+  CI_JOBS.every((j) => hosted.data.jobs.some((x) => x.name === j && x.conclusion === "success"));
 const allLayersClean = Object.values(layers).every(layerClean);
 const localCiGreen = log?.rungs.every((r) => r.ok) === true && allLayersClean;
 add(
   "CI/evidence",
   "all mandatory CI jobs green.",
-  localCiGreen ? "NOT_VERIFIED" : "FAIL",
-  localCiGreen
-    ? "all 14 CI job equivalents pass locally via scripts/p00/acceptance.ts; the hosted workflow (.github/workflows/p00.yml) has not run because the branch was not pushed (project-owner decision)"
-    : `local CI equivalents failing: ${
-        log?.rungs
-          .filter((r) => !r.ok)
-          .map((r) => r.rung)
-          .join(", ") ?? "acceptance-log.json missing"
-      }`,
+  hostedOk && localCiGreen ? "PASS" : localCiGreen ? "NOT_VERIFIED" : "FAIL",
+  hostedOk
+    ? `hosted run ${hosted.success ? hosted.data.run_url : ""}: all ${CI_JOBS.length} jobs success`
+    : localCiGreen
+      ? `all ${CI_JOBS.length} CI job equivalents pass locally (scripts/p00/acceptance.ts); no hosted-ci.json record of a hosted run for ${evidenceCommit?.slice(0, 7)} — branch not pushed (project-owner decision)`
+      : `local CI equivalents failing: ${
+          log?.rungs
+            .filter((r) => !r.ok)
+            .map((r) => r.rung)
+            .join(", ") ?? "acceptance-log.json missing"
+        }`,
 );
-const missing = requiredEvidence.filter((x) => !existsSync(join(EV, x)));
+const perf = readJson<Record<string, unknown>>("performance-baseline.json");
+const perfFields = [
+  "graph_invocation",
+  "checkpoint_read_inspect",
+  "event_write",
+  "artifact_put_1kib",
+  "artifact_get_verify_1kib",
+  "smoke_process_memory_mb",
+];
+const missing = [
+  ...requiredEvidence.filter((x) => !existsSync(join(EV, x))),
+  ...perfFields
+    .filter((k) => perf !== undefined && perf[k] === undefined)
+    .map((k) => `performance-baseline.json:${k}`),
+];
 add(
   "CI/evidence",
   "P00 evidence directory complete.",
   pass(missing.length === 0 && existsSync(join(EV, "P00-REPORT.md"))),
-  missing.length ? `missing: ${missing.join(", ")}` : "all §16 evidence files present",
+  missing.length
+    ? `missing: ${missing.join(", ")}`
+    : "all required evidence files and baseline metrics present",
 );
+
+// The report must be consistent with the evidence: same commit, and the same verdict this
+// verifier reaches (computed from every criterion except the report/verifier rows themselves).
 const report = existsSync(join(EV, "P00-REPORT.md")) ? readFileSync(join(EV, "P00-REPORT.md"), "utf8") : "";
 const reportSections = [
   "Environment",
@@ -454,13 +640,22 @@ const reportSections = [
   "Traceability",
   "Gate status",
 ];
+const preliminaryVerified = criteria.every((c) => c.status === "PASS") && openBlockers.length === 0;
+const expectedVerdict = preliminaryVerified ? "VERIFIED" : "INCOMPLETE";
+const reportVerdict = /Final P00 gate status:\s*\**\s*(VERIFIED|INCOMPLETE)/i
+  .exec(report)?.[1]
+  ?.toUpperCase();
+const sectionsPresent = reportSections.filter((s) => new RegExp(`^## .*${s}`, "mi").test(report));
 add(
   "CI/evidence",
   "P00-REPORT.md records exact commands, versions, results, failures, limitations.",
   pass(
-    reportSections.every((s) => report.includes(`## ${s}`) || new RegExp(`^## .*${s}`, "mi").test(report)),
+    sectionsPresent.length === reportSections.length &&
+      evidenceCommit !== undefined &&
+      report.includes(evidenceCommit) &&
+      reportVerdict === expectedVerdict,
   ),
-  `sections present: ${reportSections.filter((s) => new RegExp(`^## .*${s}`, "mi").test(report)).join(", ") || "none"}`,
+  `sections ${sectionsPresent.length}/${reportSections.length}; cites evidence commit=${evidenceCommit !== undefined && report.includes(evidenceCommit)}; report verdict=${reportVerdict ?? "none"} vs verifier=${expectedVerdict}`,
 );
 const skipped = Object.values(layers).reduce((n, v) => n + (v ? v.numPendingTests + v.numTodoTests : 0), 0);
 const pyXml = existsSync(join(EV, "python-tests.xml"))
@@ -490,7 +685,7 @@ const counts = criteria.reduce<Record<Status, number>>(
   },
   { PASS: 0, FAIL: 0, BLOCKED: 0, NOT_VERIFIED: 0 },
 );
-const verified = counts.PASS === criteria.length && openBlockers.length === 0;
+const verified = counts.PASS === criteria.length && openBlockers.length === 0 && blockerRegister.success;
 const result = {
   kind: "p00-independent-verification",
   generated_at: new Date().toISOString(),
@@ -514,20 +709,14 @@ const result = {
   criteria,
 };
 writeFileSync(join(EV, "verifier-result.json"), `${JSON.stringify(result, null, 2)}\n`);
-// Seal: hash everything in evidence/P00 including the report and this result.
-const gitHead = (() => {
-  try {
-    return readFileSync(join(root, ".git", "HEAD"), "utf8").trim();
-  } catch {
-    return null;
-  }
-})();
-const sealFiles = readdirSync(EV)
+// Seal: hash everything in evidence/P00 including the report and this result
+// (re-check later with --check-seal). Records the evidence commit, not a ref name.
+const sealFiles = evidenceFiles()
   .filter((x) => x !== "final-manifest.json")
   .sort();
 writeFileSync(
   join(EV, "final-manifest.json"),
-  `${JSON.stringify(buildManifest(EV, sealFiles, { phase: "P00", gitCommit: gitHead }), null, 2)}\n`,
+  `${JSON.stringify(buildManifest(EV, sealFiles, { phase: "P00", gitCommit: evidenceCommit ?? null }), null, 2)}\n`,
 );
 
 for (const c of criteria) console.log(`${c.status.padEnd(12)} [${c.section}] ${c.item}`);

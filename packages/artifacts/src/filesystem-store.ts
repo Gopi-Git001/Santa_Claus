@@ -108,8 +108,11 @@ export class FilesystemArtifactStore implements ArtifactStore {
     try {
       const blob = this.#blobPath(digest);
       await mkdir(join(blob, ".."), { recursive: true });
-      const existing = await stat(blob).catch(() => undefined);
-      if (existing === undefined) await this.#atomicWrite(blob, input.bytes);
+      // Deduplicate only against a blob whose content still matches its address; a corrupted
+      // or truncated blob is atomically replaced with the correct bytes.
+      const existing = await readFile(blob).catch(() => undefined);
+      if (existing === undefined || sha256Hex(existing) !== digest)
+        await this.#atomicWrite(blob, input.bytes);
       await this.#atomicWrite(this.#recordPath(record.artifact_id), `${JSON.stringify(record, null, 2)}\n`);
     } catch (error) {
       throw storageError(error, "put");
@@ -129,7 +132,22 @@ export class FilesystemArtifactStore implements ArtifactStore {
       }
       throw storageError(error, "metadata");
     }
-    return parseContract(ArtifactRecordContract, JSON.parse(text));
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(text);
+    } catch (error) {
+      throw new HarnessError("PAYLOAD_INVALID", `artifact ${id} metadata is not valid JSON`, {
+        details: { artifact_id: id },
+        cause: error,
+      });
+    }
+    const record = parseContract(ArtifactRecordContract, parsed);
+    if (record.artifact_id !== id) {
+      throw new HarnessError("PAYLOAD_INVALID", `artifact ${id} metadata describes ${record.artifact_id}`, {
+        details: { artifact_id: id },
+      });
+    }
+    return record;
   }
 
   async exists(id: ArtifactId): Promise<boolean> {

@@ -67,7 +67,12 @@ const cap = (id: string, overrides: Partial<CapabilityRecord> = {}): CapabilityR
   ...overrides,
 });
 
-const ledger = (capabilities: CapabilityRecord[]) => ({ schema_version: 1, source: "fixture", capabilities });
+const ledger = (capabilities: CapabilityRecord[]) => ({
+  schema_version: 1,
+  source: "fixture",
+  catalog: { path: "fixture-catalog.md", sha256: "a".repeat(64) },
+  capabilities,
+});
 const valid = () => [cap("C901", { owning_phase: "P00" }), cap("C902"), cap("C903", { owning_phase: "P02" })];
 const codes = (issues: { code: string }[]) => issues.map((i) => i.code);
 
@@ -133,6 +138,32 @@ describe("validateLedger", () => {
     expect(codes(validateLedger(ledger(caps), { domains, phases }, opts))).toEqual(
       expect.arrayContaining(["BROKEN_REF", "OWNERSHIP_MISMATCH"]),
     );
+  });
+
+  it("binds the ledger to its authoritative catalog by sha256", () => {
+    const withHash = (sha: string | undefined) => ({ ...opts, fileSha256: () => sha });
+    expect(validateLedger(ledger(valid()), { domains, phases }, withHash("a".repeat(64)))).toEqual([]);
+    expect(codes(validateLedger(ledger(valid()), { domains, phases }, withHash("b".repeat(64))))).toContain(
+      "CATALOG_MISMATCH",
+    );
+    expect(codes(validateLedger(ledger(valid()), { domains, phases }, withHash(undefined)))).toContain(
+      "CATALOG_MISSING",
+    );
+    const { catalog: _, ...unbound } = ledger(valid());
+    expect(codes(validateLedger(unbound, { domains, phases }, opts))).toEqual(["SCHEMA_INVALID"]);
+  });
+
+  it("reports a ledger with no P00-owned requirements as blocked, not valid", () => {
+    const caps = [cap("C901", { owning_phase: "P01" }), cap("C902"), cap("C903", { owning_phase: "P02" })];
+    const issues = validateLedger(
+      ledger(caps),
+      {
+        domains,
+        phases: { ...phases, phases: phases.phases.map((p) => ({ ...p, owned_capability_ids: [] })) },
+      },
+      opts,
+    );
+    expect(issues).toEqual([expect.objectContaining({ severity: "blocked", code: "NO_P00_REQUIREMENTS" })]);
   });
 
   it("rejects records missing required fields", () => {

@@ -1,5 +1,5 @@
 import { FilesystemArtifactStore } from "@harness/artifacts";
-import type { HarnessConfig } from "@harness/config";
+import type { ConfigSource, HarnessConfig } from "@harness/config";
 import {
   type ArtifactRecord,
   HarnessError,
@@ -39,6 +39,8 @@ export interface SmokeHarness {
 
 export interface SmokeHarnessOptions {
   config: HarnessConfig;
+  /** Where the configuration came from (variable names only); logged at startup (P00 spec §21). */
+  configSource?: ConfigSource;
   /** Override the database URL (e.g. a per-test database); defaults to config. */
   databaseUrl?: string;
   logger?: Logger;
@@ -88,6 +90,12 @@ export async function createSmokeHarness(options: SmokeHarnessOptions): Promise<
   const url = options.databaseUrl ?? config.database.url.reveal();
   const log = (options.logger ?? createLogger({ level: config.logging.level })).child({
     component: "smoke-harness",
+  });
+  log.info("configuration loaded", {
+    config_schema_version: config.config_schema_version,
+    environment: config.environment,
+    source: options.configSource ?? { kind: "provided-by-caller" },
+    feature_flags: config.feature_flags,
   });
   const db = await Database.connect({
     connectionString: url,
@@ -201,6 +209,12 @@ export async function createSmokeHarness(options: SmokeHarnessOptions): Promise<
     workflow,
     observations,
     async startRun(input) {
+      if (input.approval_required && !config.feature_flags.interrupt_demo) {
+        throw new HarnessError(
+          "CONFIG_INVALID",
+          "human-interrupt demo is disabled (HARNESS_FF_INTERRUPT_DEMO=false)",
+        );
+      }
       const identity: WorkflowIdentity = {
         run_id: newId("RunId"),
         thread_id: newId("ThreadId"),

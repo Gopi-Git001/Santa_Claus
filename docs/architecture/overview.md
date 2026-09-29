@@ -39,7 +39,8 @@ LangGraphSmokeWorkflow (@harness/orchestration)
 PostgreSQL schema harness_checkpoints   public.harness_events
 ```
 
-- Nodes are deterministic and have no shell/filesystem/network access (tested).
+- Nodes are deterministic and have no shell/filesystem/network access (tested transitively).
+- Checkpoints are written synchronously before each next step (`durability: "sync"`, ADR-0012).
 - `approval_gate` records a demo `PolicyDecision`; `interrupt_for_human` pauses durably.
 - Resume requires an explicit, validated `HumanResponse` and is authorised against
   the durable thread→run binding (`harness_threads`): wrong run → `THREAD_MISMATCH`,

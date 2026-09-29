@@ -1,0 +1,25 @@
+# Cross-language opaque-ID conformance fixture (ADR-0003).
+# Format: <valid|invalid> <prefix> <candidate>
+# Consumed by packages/contracts/test/id-fixture.test.ts (TypeScript) and
+# services/rust/crates/harness-native (Rust, via HARNESS_ID_FIXTURES).
+valid run run_0123456789abcdefghjkmnpqrs
+valid thr thr_zzzzzzzzzzzzzzzzzzzzzzzzzz
+valid agt agt_00000000000000000000000000
+valid tsk tsk_abcdefghjkmnpqrstvwxyz0123
+valid evt evt_9876543210zyxwvtsrqpnmkjhg
+valid art art_0a1b2c3d4e5f6g7h8j9k0m1n2p
+valid apr apr_qqqqqqqqqqqqqqqqqqqqqqqqqq
+valid evd evd_7777777777777777777777777z
+invalid run run_short
+invalid run run_0123456789abcdefghjkmnpqri
+invalid run run_0123456789abcdefghjkmnpqrl
+invalid run run_0123456789abcdefghjkmnpqro
+invalid run run_0123456789abcdefghjkmnpqru
+invalid run RUN_0123456789abcdefghjkmnpqrs
+invalid run run_0123456789ABCDEFGHJKMNPQRS
+invalid run run0123456789abcdefghjkmnpqrst
+invalid run run_0123456789abcdefghjkmnpqrst
+invalid thr run_0123456789abcdefghjkmnpqrs
+invalid evt evt_0123456789abcdefghjkmnpqr
+invalid art art-0123456789abcdefghjkmnpqrs
+invalid evd evd__123456789abcdefghjkmnpqrs

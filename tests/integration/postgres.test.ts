@@ -153,7 +153,7 @@ describe("system-of-record repositories", () => {
     await expect(events.append(e)).rejects.toMatchObject({ code: "INVALID_REFERENCE" });
   });
 
-  it("detects a corrupted stored event payload on read", async () => {
+  it("enforces an append-only event log and detects a privileged tamper on read", async () => {
     const { runs, events } = pgRepositories(t.db);
     const run = newRun();
     await runs.create(run);

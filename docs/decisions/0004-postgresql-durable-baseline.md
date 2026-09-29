@@ -17,6 +17,14 @@ PostgreSQL (18.6 in development, digest-pinned image) is the system of record. P
 
 In-memory checkpoints (`memoryCheckpointPersistence`) exist for unit tests only and are never evidence of persistence.
 
+**Known limitation:** the checkpoint tables are created and versioned by the LangGraph saver's own
+`setup()` (its `checkpoint_migrations` table), not by the harness migration runner. The harness
+records that version in `langgraph-smoke.json` (`checkpoint_store_schema_version`) so drift is
+visible, but "migrations are reproducible" as tested covers the harness schema only.
+
+The event log is append-only in the database itself (migration `0002`: UPDATE/DELETE/TRUNCATE on
+`harness_events` are rejected by triggers).
+
 ## Consequences
 Every record is validated against its contract on write and read; corrupted rows surface as `PAYLOAD_INVALID`. Driver errors are classified (`DB_UNAVAILABLE`, `DB_DISCONNECTED`, `DUPLICATE_ID`, `INVALID_REFERENCE`) without leaking connection strings.
 

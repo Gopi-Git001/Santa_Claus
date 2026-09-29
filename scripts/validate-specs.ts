@@ -6,6 +6,7 @@
  * Exit codes: 0 VALID · 1 INVALID (errors) · 2 BLOCKED (no errors, but required
  * specification content is missing — e.g. the capability catalog).
  */
+import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import {
@@ -33,7 +34,11 @@ function refExists(ref: string): boolean {
   if (!existsSync(full)) return false;
   return anchor === undefined || readFileSync(full, "utf8").includes(anchor);
 }
-const opts = { ...P00_OPTIONS, refExists };
+const fileSha256 = (path: string) => {
+  const full = join(root, path);
+  return existsSync(full) ? createHash("sha256").update(readFileSync(full)).digest("hex") : undefined;
+};
+const opts = { ...P00_OPTIONS, refExists, fileSha256 };
 
 const sections: Record<string, { issues: Issue[]; stats: Record<string, number> }> = {};
 

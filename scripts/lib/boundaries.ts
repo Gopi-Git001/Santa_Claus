@@ -60,12 +60,26 @@ export interface BoundaryViolation {
 }
 
 const IMPORT_RE =
-  /(?:^|\n)\s*(?:import|export)\s+(?:type\s+)?(?:[^'"]*?\sfrom\s+)?["']([^"']+)["']|import\(\s*["']([^"']+)["']\s*\)/g;
+  /(?:^|\n|;)\s*(?:import|export)\s+(?:type\s+)?(?:[^'"]*?\sfrom\s+)?["']([^"']+)["']|\bimport\(\s*["']([^"']+)["']\s*\)|\brequire\(\s*["']([^"']+)["']\s*\)/g;
 
+/** All files reachable from `entry` through relative imports (the entry included). */
+export function relativeClosure(entry: string): string[] {
+  const seen = new Set<string>();
+  const visit = (file: string) => {
+    if (seen.has(file)) return;
+    seen.add(file);
+    for (const spec of importsOf(readFileSync(file, "utf8")))
+      if (spec.startsWith(".")) visit(join(file, "..", spec));
+  };
+  visit(entry);
+  return [...seen];
+}
+
+/** Module specifiers referenced by static/dynamic imports, re-exports and require() calls. */
 export function importsOf(source: string): string[] {
   const out: string[] = [];
   for (const m of source.matchAll(IMPORT_RE)) {
-    const spec = m[1] ?? m[2];
+    const spec = m[1] ?? m[2] ?? m[3];
     if (spec !== undefined) out.push(spec);
   }
   return out;

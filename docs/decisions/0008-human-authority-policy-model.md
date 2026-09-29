@@ -11,6 +11,8 @@
 - P00 demonstrates the path in the smoke graph: `approval_gate` records a static demo decision (`policy.decision_recorded`), `interrupt_for_human` pauses durably, and resume requires an explicit validated human response.
 
 The policy engine and approval workflow are P06; P00 implements interfaces plus the demonstration only.
+`resolveAuthority` and `failClosed` are deliberately tiny *interim* helpers (P06 will own the real
+engine); they exist so INV-015 and INV-020 are executable in P00.
 
 ## Enforcement
 `tests/contract/extension-contracts.test.ts`, `packages/orchestration/test/smoke-graph.test.ts`, `tests/e2e/restart-resume.test.ts`.

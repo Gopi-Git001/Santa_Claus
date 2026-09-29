@@ -1,4 +1,3 @@
-import { spawnSync } from "node:child_process";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -9,6 +8,7 @@ import {
   type TestDatabase,
 } from "@harness/persistence";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { runSmokeChild } from "./child.ts";
 
 /*
  * P00 restart/resume proof (P00 spec §15 scenarios 1–6, §33 #9 and #15).
@@ -17,14 +17,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
  */
 let t: TestDatabase;
 let env: NodeJS.ProcessEnv;
-const script = join(import.meta.dirname, "smoke-process.ts");
-
-function child(...args: string[]): { pid: number } & Record<string, unknown> {
-  const r = spawnSync(process.execPath, [script, ...args], { env, encoding: "utf8", timeout: 60_000 });
-  if (r.status !== 0) throw new Error(`child ${args[0]} exited ${r.status}: ${r.stderr}`);
-  const line = r.stdout.trim().split("\n").at(-1) ?? "";
-  return JSON.parse(line) as { pid: number } & Record<string, unknown>;
-}
+const child = (...args: string[]) => runSmokeChild(env, ...args);
 
 beforeAll(async () => {
   t = await createTestDatabase(requireDatabaseUrl());
@@ -45,6 +38,7 @@ describe("process restart → resume on the same thread", () => {
   it("persists across process death, stays interrupted until resumed, then completes", async () => {
     const started = child("start");
     expect(started["kind"]).toBe("interrupted");
+    expect(started.killed, "the checkpointing process must die abruptly (SIGKILL)").toBe(true);
     const identity = started["identity"] as { run_id: string; thread_id: string; trace_id: string };
 
     // A different process sees the persisted, still-pending interrupt (graph not resumed ≠ completed).

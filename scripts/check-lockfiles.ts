@@ -55,7 +55,8 @@ for (const manifest of [
 
 const env = { ...process.env, COREPACK_ENABLE_DOWNLOAD_PROMPT: "0" };
 const pnpm = run(
-  [...PNPM, "install", "--frozen-lockfile", "--offline", "--ignore-scripts", "--lockfile-only"],
+  // Not --offline: that made the result depend on the local metadata cache (observed flaky).
+  [...PNPM, "install", "--frozen-lockfile", "--ignore-scripts", "--lockfile-only"],
   { cwd: root, env },
 );
 check(

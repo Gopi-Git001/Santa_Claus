@@ -16,5 +16,6 @@ supersedes the old one; history is never rewritten (P00 spec §13).
 | [0009](0009-event-envelope-versioning.md) | Event envelope and versioning strategy | Accepted |
 | [0010](0010-requirement-evidence-traceability.md) | Requirement / evidence traceability | Accepted |
 | [0011](0011-p00-toolchain-and-environment.md) | P00 toolchain and environment choices | Accepted |
+| [0012](0012-sync-checkpoint-durability-and-owned-pool.md) | Synchronous checkpoint durability and a harness-owned checkpoint pool | Accepted |
 
 Template: Context · Decision · Alternatives considered · Consequences · Enforcement.

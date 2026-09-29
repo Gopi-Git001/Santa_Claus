@@ -24,6 +24,7 @@ const fresh = args.includes("--fresh");
 const generateLock = args.includes("--generate-lockfile");
 const jsonOut = args.includes("--json") ? args[args.indexOf("--json") + 1] : undefined;
 const src = resolve(join(import.meta.dirname, "..", "services", "rust"));
+const fixtures = resolve(join(import.meta.dirname, "..", "specs", "fixtures"));
 
 function docker(dockerArgs: string[]) {
   return run(["docker", ...dockerArgs]);
@@ -72,6 +73,11 @@ function inContainer(command: string, writableSource = false) {
     "/tmp:rw,exec,size=512m",
     "-v",
     `${src}:/src:${writableSource ? "rw" : "ro"}`,
+    // Shared cross-language fixtures only (read-only), for the ID conformance test.
+    "-v",
+    `${fixtures}:/fixtures:ro`,
+    "-e",
+    "HARNESS_ID_FIXTURES=/fixtures/opaque-ids.txt",
     "-v",
     `${VOLUMES.target}:/cache/target`,
     "-v",

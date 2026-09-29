@@ -7,7 +7,6 @@
  * from a NEW process, 5 verify expected state, 6 prove other threads/runs cannot
  * resume it. Uses a fresh isolated database against real PostgreSQL.
  */
-import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -15,10 +14,10 @@ import { loadConfig } from "@harness/config";
 import { isHarnessError, newId, newTraceId } from "@harness/contracts";
 import { createTestDatabase, pgRepositories, requireDatabaseUrl } from "@harness/persistence";
 import { createSmokeHarness } from "@harness/testing";
+import { runSmokeChild } from "../../tests/e2e/child.ts";
 
 const args = process.argv.slice(2);
 const jsonOut = args.includes("--json") ? args[args.indexOf("--json") + 1] : undefined;
-const childScript = join(import.meta.dirname, "..", "..", "tests", "e2e", "smoke-process.ts");
 
 const t = await createTestDatabase(requireDatabaseUrl());
 const artifactRoot = mkdtempSync(join(tmpdir(), "harness-pr-"));
@@ -33,22 +32,7 @@ const childEnv = {
 const steps: Record<string, unknown>[] = [];
 const checks: Record<string, boolean> = {};
 
-function child(...a: string[]): Record<string, unknown> {
-  const started = performance.now();
-  const r = spawnSync(process.execPath, [childScript, ...a], {
-    env: childEnv,
-    encoding: "utf8",
-    timeout: 60_000,
-  });
-  const parsed =
-    r.status === 0 ? (JSON.parse(r.stdout.trim().split("\n").at(-1) ?? "{}") as Record<string, unknown>) : {};
-  return {
-    exit_code: r.status,
-    duration_ms: Math.round(performance.now() - started),
-    ...parsed,
-    stderr: r.status === 0 ? undefined : r.stderr,
-  };
-}
+const child = (...a: string[]): Record<string, unknown> => runSmokeChild(childEnv, ...a);
 const checkpointRows = async (thread: string) =>
   Number(
     (
@@ -64,7 +48,7 @@ try {
   const started = child("start");
   const identity = started["identity"] as { run_id: string; thread_id: string; trace_id: string };
   steps.push({
-    step: "1-2 start graph in process A; checkpoint at human interrupt; process A exits",
+    step: "1-2 start graph in process A; checkpoint at human interrupt; process A is SIGKILLed",
     ...started,
   });
   const rowsAfterA = await checkpointRows(identity.thread_id);
@@ -82,6 +66,7 @@ try {
   const state = resumed["state"] as Record<string, unknown> | undefined;
   checks["three_distinct_processes"] =
     new Set([started["pid"], inspected["pid"], resumed["pid"], process.pid]).size === 4;
+  checks["checkpointing_process_killed_abruptly"] = started["killed"] === true;
   checks["checkpoint_persisted_before_restart"] = rowsAfterA > 0;
   checks["interrupt_pending_after_restart"] =
     (inspected["snapshot"] as { pending_interrupt: { node: string } | null } | null)?.pending_interrupt

@@ -219,7 +219,7 @@ jobs:
           node-version-file: .nvmrc
       - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
       - run: corepack pnpm install --frozen-lockfile
-      - run: node scripts/p00/acceptance.ts --ci --skip-fresh-env
+      - run: node scripts/p00/acceptance.ts --ci
       - if: always()
         run: node scripts/p00/verify.ts
       - if: always()

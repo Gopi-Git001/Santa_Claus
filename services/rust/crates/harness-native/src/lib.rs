@@ -67,6 +67,47 @@ pub fn is_valid_opaque_id(kind: OpaqueIdKind, id: &str) -> bool {
 mod tests {
     use super::{OpaqueIdKind, is_valid_opaque_id};
 
+    fn kind_for(prefix: &str) -> OpaqueIdKind {
+        match prefix {
+            "run" => OpaqueIdKind::Run,
+            "thr" => OpaqueIdKind::Thread,
+            "agt" => OpaqueIdKind::Agent,
+            "tsk" => OpaqueIdKind::Task,
+            "evt" => OpaqueIdKind::Event,
+            "art" => OpaqueIdKind::Artifact,
+            "apr" => OpaqueIdKind::Approval,
+            "evd" => OpaqueIdKind::Evidence,
+            other => panic!("unknown prefix in fixture: {other}"),
+        }
+    }
+
+    /// Cross-language conformance: the same fixture is asserted by the TypeScript
+    /// contracts (`packages/contracts/test/id-fixture.test.ts`). The path comes from
+    /// `HARNESS_ID_FIXTURES` (set by `scripts/rust-check.ts`); a missing fixture fails.
+    #[test]
+    fn agrees_with_the_shared_typescript_fixture() {
+        let path = std::env::var("HARNESS_ID_FIXTURES")
+            .expect("HARNESS_ID_FIXTURES must point at specs/fixtures/opaque-ids.txt");
+        let text = std::fs::read_to_string(&path).expect("fixture readable");
+        let mut checked = 0;
+        for line in text
+            .lines()
+            .map(str::trim)
+            .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        {
+            let parts: Vec<&str> = line.split_whitespace().collect();
+            assert_eq!(parts.len(), 3, "malformed fixture line: {line}");
+            let expected = parts[0] == "valid";
+            assert_eq!(
+                is_valid_opaque_id(kind_for(parts[1]), parts[2]),
+                expected,
+                "{line}"
+            );
+            checked += 1;
+        }
+        assert!(checked > 15, "fixture unexpectedly small ({checked} cases)");
+    }
+
     #[test]
     fn accepts_a_valid_id() {
         assert!(is_valid_opaque_id(

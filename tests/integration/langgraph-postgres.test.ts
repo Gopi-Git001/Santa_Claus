@@ -1,4 +1,6 @@
+import { loadConfig } from "@harness/config";
 import { newId, newTraceId } from "@harness/contracts";
+import { createMemoryLogger } from "@harness/observability";
 import {
   createTestDatabase,
   pgRepositories,
@@ -128,6 +130,36 @@ describe("LangGraph.js smoke graph on PostgreSQL", () => {
     expect(events.filter((e) => e.event_type === "graph.resumed")).toHaveLength(1);
     expect(events.filter((e) => e.event_type === "artifact.created")).toHaveLength(1);
     expect((await pgRepositories(t.db).runs.get(identity.run_id))?.status).toBe("COMPLETED");
+  });
+
+  it("logs the configuration source without values and honours the interrupt-demo feature flag", async () => {
+    const { logger, lines } = createMemoryLogger("info");
+    const { config, source } = loadConfig({
+      HARNESS_ENV: "test",
+      DATABASE_URL: t.url,
+      HARNESS_ARTIFACT_ROOT: ".data/artifacts-flag-test",
+      HARNESS_FF_INTERRUPT_DEMO: "false",
+    });
+    const flagged = await createSmokeHarness({ config, configSource: source, databaseUrl: t.url, logger });
+    try {
+      const loaded = lines().find((l) => (l as { msg: string }).msg === "configuration loaded") as Record<
+        string,
+        unknown
+      >;
+      expect(loaded["source"]).toMatchObject({
+        kind: "environment",
+        keys_present: expect.arrayContaining(["DATABASE_URL"]),
+      });
+      expect(JSON.stringify(lines())).not.toContain(new URL(t.url).password);
+      await expect(flagged.startRun({ goal: "flag off", approval_required: true })).rejects.toMatchObject({
+        code: "CONFIG_INVALID",
+      });
+      expect(
+        (await flagged.startRun({ goal: "flag off, no approval", approval_required: false })).outcome.kind,
+      ).toBe("completed");
+    } finally {
+      await flagged.close();
+    }
   });
 
   it("rejects resuming a thread that has no pending interrupt", async () => {

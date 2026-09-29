@@ -53,6 +53,29 @@ describe("FilesystemArtifactStore", () => {
     expect(r1.provenance.trace_id).not.toBe(r2.provenance.trace_id);
   });
 
+  it("repairs a corrupted blob on re-put instead of deduplicating against it", async () => {
+    const root = join(dir, "repair");
+    const store = await FilesystemArtifactStore.open(root, { create: true });
+    const first = await store.put(input("repair me"));
+    const d = first.content_hash.digest;
+    await writeFile(join(root, "blobs", "sha256", d.slice(0, 2), d), "corrupted");
+    expect((await store.verifyHash(first.artifact_id)).ok).toBe(false);
+    const second = await store.put(input("repair me"));
+    expect((await store.verifyHash(second.artifact_id)).ok).toBe(true);
+    expect((await store.verifyHash(first.artifact_id)).ok).toBe(true);
+  });
+
+  it("rejects metadata that is not JSON or describes a different artifact", async () => {
+    const root = join(dir, "meta");
+    const store = await FilesystemArtifactStore.open(root, { create: true });
+    const a = await store.put(input("a"));
+    const b = await store.put(input("b"));
+    await writeFile(join(root, "records", `${a.artifact_id}.json`), "{not json");
+    await expect(store.metadata(a.artifact_id)).rejects.toMatchObject({ code: "PAYLOAD_INVALID" });
+    await writeFile(join(root, "records", `${a.artifact_id}.json`), JSON.stringify(b));
+    await expect(store.metadata(a.artifact_id)).rejects.toMatchObject({ code: "PAYLOAD_INVALID" });
+  });
+
   it("reports a missing artifact without throwing from exists()", async () => {
     const store = await FilesystemArtifactStore.open(join(dir, "c"), { create: true });
     expect(await store.exists(newId("ArtifactId"))).toBe(false);

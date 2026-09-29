@@ -8,7 +8,7 @@
       "p00_scope": "enforced",
       "p00_refs": [
         "tests/contract/extension-contracts.test.ts#a model tool call is a proposal only",
-        "tests/contract/no-authority.test.ts#imports only allow-listed, side-effect-free modules"
+        "tests/contract/no-authority.test.ts#node code (graph + schemas, transitively) imports only side-effect-free modules"
       ],
       "notes": "ModelAdapter exposes generate/stream only; tool calls are ToolCallProposal data."
     },
@@ -66,9 +66,10 @@
       "p00_scope": "enforced",
       "p00_refs": [
         "tests/integration/postgres.test.ts#records events durably in order with causation links",
+        "tests/integration/postgres.test.ts#enforces an append-only event log",
         "tests/e2e/restart-resume.test.ts#persists across process death"
       ],
-      "notes": ""
+      "notes": "harness_events rejects UPDATE/DELETE/TRUNCATE (migration 0002)."
     },
     {
       "id": "INV-008",
@@ -112,8 +113,11 @@
       "id": "INV-012",
       "statement": "Unknown execution outcome is not automatically treated as failure.",
       "p00_scope": "enforced",
-      "p00_refs": ["packages/contracts/test/records.test.ts#keeps UNKNOWN distinct from FAILED"],
-      "notes": "Smoke harness maps DB_DISCONNECTED/UNKNOWN_OUTCOME to run status UNKNOWN, not FAILED."
+      "p00_refs": [
+        "packages/contracts/test/records.test.ts#keeps UNKNOWN distinct from FAILED",
+        "tests/failure/p00-failures.test.ts#F03 database disconnect during the test workflow"
+      ],
+      "notes": "A connection lost mid-workflow (event log or checkpoint store) records run status UNKNOWN, not FAILED (F03)."
     },
     {
       "id": "INV-013",
@@ -152,7 +156,7 @@
       "p00_scope": "enforced",
       "p00_refs": [
         "packages/contracts/test/records.test.ts#defaults every scope to no access",
-        "tests/contract/no-authority.test.ts#contains no process, network, eval or dynamic-import use",
+        "tests/contract/no-authority.test.ts#runtime adapter (transitively) reaches only the harness-owned checkpoint store",
         "tests/contract/extension-contracts.test.ts#refuses to register any capability with side effects in P00"
       ],
       "notes": ""

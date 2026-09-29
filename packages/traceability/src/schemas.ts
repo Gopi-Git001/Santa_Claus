@@ -97,6 +97,11 @@ export const CapabilityRecordSchema = z.strictObject({
 export const CapabilityLedgerSchema = z.strictObject({
   schema_version: z.literal(1),
   source: Source,
+  /** Binds the ledger to the authoritative catalog document supplied by the project owner. */
+  catalog: z.strictObject({
+    path: z.string().min(1),
+    sha256: z.string().regex(/^[0-9a-f]{64}$/),
+  }),
   capabilities: z.array(CapabilityRecordSchema),
 });
 
