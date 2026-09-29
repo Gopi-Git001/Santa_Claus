@@ -1,11 +1,11 @@
 {
   "kind": "p00-independent-verification",
-  "generated_at": "2026-09-29T03:06:36.228Z",
+  "generated_at": "2026-09-29T03:07:24.281Z",
   "phase": "P00",
   "status": "INCOMPLETE",
   "counts": {
-    "PASS": 24,
-    "FAIL": 3,
+    "PASS": 25,
+    "FAIL": 2,
     "BLOCKED": 6,
     "NOT_VERIFIED": 0
   },
@@ -235,7 +235,7 @@
       "section": "CI/evidence",
       "item": "evidence is bound to the verified commit (supports all criteria).",
       "status": "PASS",
-      "detail": "evidence commit 52d01794d2429f78daf491454151442cda2e59dc (HEAD 52d01794d2429f78daf491454151442cda2e59dc); only evidence/ changed since"
+      "detail": "evidence commit 52d01794d2429f78daf491454151442cda2e59dc (HEAD a8ee7de5270365500f1d69361d9ecfadeade5d62); only evidence/ changed since"
     },
     {
       "section": "CI/evidence",
@@ -252,8 +252,8 @@
     {
       "section": "CI/evidence",
       "item": "P00-REPORT.md records exact commands, versions, results, failures, limitations.",
-      "status": "FAIL",
-      "detail": "sections 7/7; cites evidence commit=false; report verdict=INCOMPLETE vs verifier=INCOMPLETE"
+      "status": "PASS",
+      "detail": "sections 7/7; cites evidence commit=true; report verdict=INCOMPLETE vs verifier=INCOMPLETE"
     },
     {
       "section": "CI/evidence",

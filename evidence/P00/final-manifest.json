@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "phase": "P00",
-  "generated_at": "2026-09-29T03:06:36.232Z",
+  "generated_at": "2026-09-29T03:07:24.296Z",
   "git_commit": "52d01794d2429f78daf491454151442cda2e59dc",
   "files": [
     {
       "path": "P00-REPORT.md",
-      "sha256": "6fe36f0a3e5ba717c2cc2cc73bf4c25ea904e8bb2904a2b5e9fcee9064efd69a",
-      "size_bytes": 16636
+      "sha256": "4a11ab156fb711fdb842953a25bee0be4021cd32d1fac625125ca9e17efc69e8",
+      "size_bytes": 17232
     },
     {
       "path": "acceptance-log.json",
@@ -151,8 +151,8 @@
     },
     {
       "path": "verifier-result.json",
-      "sha256": "a817de5d470e7731e45d2cf3a30f3ef893ebfc9d03081775414fd4c9efc9a19f",
-      "size_bytes": 9667
+      "sha256": "b448a8591bdc831081317975275383d0b1d780b10e712a3cde5ae31862ab6853",
+      "size_bytes": 9666
     }
   ]
 }
