@@ -1,6 +1,6 @@
 {
   "kind": "p00-independent-verification",
-  "generated_at": "2026-09-29T02:49:18.359Z",
+  "generated_at": "2026-09-29T02:53:54.907Z",
   "phase": "P00",
   "status": "INCOMPLETE",
   "counts": {
@@ -235,7 +235,7 @@
       "section": "CI/evidence",
       "item": "evidence is bound to the verified commit (supports all criteria).",
       "status": "PASS",
-      "detail": "evidence commit 1f25edc5e2da500941892b9498a79e6be7a0dd69 (HEAD 1f25edc5e2da500941892b9498a79e6be7a0dd69); only evidence/ changed since"
+      "detail": "evidence commit 1f25edc5e2da500941892b9498a79e6be7a0dd69 (HEAD 7f03c01111b1710a897f02e04d364aadc9ae37fe); only evidence/ changed since"
     },
     {
       "section": "CI/evidence",
