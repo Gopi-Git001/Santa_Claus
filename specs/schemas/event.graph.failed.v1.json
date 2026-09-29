@@ -1,0 +1,51 @@
+{
+  "$id": "urn:harness:schema:event.graph.failed:v1",
+  "title": "event.graph.failed",
+  "x-version": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "graph": {
+      "type": "string",
+      "minLength": 1
+    },
+    "graph_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "node": {
+      "type": "string",
+      "minLength": 1
+    },
+    "error_code": {
+      "type": "string",
+      "enum": [
+        "CONFIG_INVALID",
+        "DB_UNAVAILABLE",
+        "DB_DISCONNECTED",
+        "PAYLOAD_INVALID",
+        "UNSUPPORTED_SCHEMA_VERSION",
+        "DUPLICATE_ID",
+        "INVALID_REFERENCE",
+        "THREAD_MISMATCH",
+        "THREAD_NOT_FOUND",
+        "GRAPH_NOT_INTERRUPTED",
+        "NODE_FAILED",
+        "ARTIFACT_HASH_MISMATCH",
+        "ARTIFACT_NOT_FOUND",
+        "STORAGE_UNAVAILABLE",
+        "UNKNOWN_OUTCOME"
+      ]
+    },
+    "message": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "graph",
+    "graph_version",
+    "error_code",
+    "message"
+  ],
+  "additionalProperties": false
+}

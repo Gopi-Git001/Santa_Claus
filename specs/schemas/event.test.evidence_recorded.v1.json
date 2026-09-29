@@ -1,0 +1,27 @@
+{
+  "$id": "urn:harness:schema:event.test.evidence_recorded:v1",
+  "title": "event.test.evidence_recorded",
+  "x-version": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "pattern": "^evd_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "evidence_id",
+    "name",
+    "path"
+  ],
+  "additionalProperties": false
+}

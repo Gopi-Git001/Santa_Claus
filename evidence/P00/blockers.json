@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "phase": "P00",
+  "blockers": [
+    {
+      "id": "P00-BLK-001",
+      "kind": "specification_gap",
+      "status": "OPEN",
+      "recorded_at": "2026-09-28",
+      "recorded_by": "claude-code (on explicit user instruction)",
+      "title": "Authoritative C001-C168 capability catalog is missing",
+      "description": "MASTER_PROJECT_WORKFLOW.md section 5 defines only capability-family ranges. No authoritative per-ID title, description, domain, owning phase, dependencies, or mandatory flag exists for C001-C168. The user confirmed this gap and will supply the official catalog.",
+      "blocked_gate_items": [
+        "Requirements: C001-C168 unique",
+        "Requirements: 168/168 assigned to domains",
+        "Requirements: 168/168 assigned to owning phases",
+        "Requirements: all dependency references valid",
+        "Requirements: P00-owned requirements have test/evidence mappings",
+        "Architecture: P00-P18 registry valid (owned capability IDs per phase)",
+        "CI/evidence: traceability-audit job green"
+      ],
+      "constraints": [
+        "C001-C168 are reserved IDs; do not invent, infer, renumber, or assign them.",
+        "Do not create placeholder capability definitions.",
+        "Do not mark the traceability gate complete.",
+        "Do not mark P00 VERIFIED while this blocker is OPEN."
+      ],
+      "resolution": "Import the user-provided CAPABILITY_CATALOG.md / machine-readable ledger, validate all 168 records, then resume traceability acceptance work."
+    }
+  ]
+}

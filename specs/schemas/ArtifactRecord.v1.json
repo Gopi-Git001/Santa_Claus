@@ -1,0 +1,144 @@
+{
+  "$id": "urn:harness:schema:ArtifactRecord:v1",
+  "title": "ArtifactRecord",
+  "x-version": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "number",
+      "const": 1
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^art_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^run_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "producer": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "harness",
+            "graph_node",
+            "agent",
+            "human",
+            "test"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "media_type": {
+      "type": "string",
+      "pattern": "^[a-z]+\\/[a-z0-9.+-]+$"
+    },
+    "size_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "content_hash": {
+      "type": "object",
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "const": "sha256"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "algorithm",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "storage_ref": {
+      "type": "object",
+      "properties": {
+        "backend": {
+          "type": "string",
+          "minLength": 1
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "backend",
+        "key"
+      ],
+      "additionalProperties": false
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "trace_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "derived_from": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^art_[0-9a-hjkmnp-tv-z]{26}$"
+          }
+        }
+      },
+      "required": [
+        "trace_id",
+        "source",
+        "derived_from"
+      ],
+      "additionalProperties": false
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "UNVERIFIED",
+        "VERIFIED",
+        "FAILED"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "run_id",
+    "producer",
+    "media_type",
+    "size_bytes",
+    "content_hash",
+    "storage_ref",
+    "created_at",
+    "provenance",
+    "verification_status"
+  ],
+  "additionalProperties": false
+}

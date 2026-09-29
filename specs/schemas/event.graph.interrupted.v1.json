@@ -1,0 +1,32 @@
+{
+  "$id": "urn:harness:schema:event.graph.interrupted:v1",
+  "title": "event.graph.interrupted",
+  "x-version": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "graph": {
+      "type": "string",
+      "minLength": 1
+    },
+    "graph_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "node": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interrupt_kind": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "graph",
+    "graph_version",
+    "node",
+    "interrupt_kind"
+  ],
+  "additionalProperties": false
+}

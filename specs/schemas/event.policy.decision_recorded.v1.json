@@ -1,0 +1,93 @@
+{
+  "$id": "urn:harness:schema:event.policy.decision_recorded:v1",
+  "title": "event.policy.decision_recorded",
+  "x-version": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "subject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "number",
+          "const": 1
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "AUTO_ALLOW",
+            "ASK_HUMAN",
+            "DENY"
+          ]
+        },
+        "reason_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$"
+        },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "constraints": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema0"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "decision",
+        "reason_code",
+        "policy_version",
+        "constraints"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "subject",
+    "decision"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "__schema0": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/__schema0"
+          }
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema0"
+          }
+        }
+      ]
+    }
+  }
+}

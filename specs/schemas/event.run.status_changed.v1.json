@@ -1,0 +1,48 @@
+{
+  "$id": "urn:harness:schema:event.run.status_changed:v1",
+  "title": "event.run.status_changed",
+  "x-version": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "from": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "CREATED",
+            "RUNNING",
+            "INTERRUPTED",
+            "COMPLETED",
+            "FAILED",
+            "CANCELLED",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "to": {
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "RUNNING",
+        "INTERRUPTED",
+        "COMPLETED",
+        "FAILED",
+        "CANCELLED",
+        "UNKNOWN"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "from",
+    "to"
+  ],
+  "additionalProperties": false
+}

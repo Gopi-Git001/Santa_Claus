@@ -1,0 +1,27 @@
+{
+  "$id": "urn:harness:schema:event.run.created:v1",
+  "title": "event.run.created",
+  "x-version": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "root_goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "policy_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "budget_profile": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "root_goal",
+    "policy_profile",
+    "budget_profile"
+  ],
+  "additionalProperties": false
+}

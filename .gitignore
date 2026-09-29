@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+coverage/
+.vitest/
+# local artifact store and scratch output
+.data/
+# python
+services/python/.venv/
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+# rust build output lives in a Docker volume; guard against accidental host builds
+services/rust/target/

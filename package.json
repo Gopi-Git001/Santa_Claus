@@ -1,0 +1,48 @@
+{
+  "name": "agent-harness",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.6.0",
+  "engines": {
+    "node": ">=24.18.0 <25"
+  },
+  "scripts": {
+    "bootstrap": "node scripts/bootstrap.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "test:unit": "vitest run --project unit",
+    "test:contract": "vitest run --project contract",
+    "test:integration": "vitest run --project integration",
+    "test:failure": "vitest run --project failure",
+    "test:e2e": "vitest run --project e2e",
+    "db:up": "docker compose -f infra/dev/docker-compose.yml up -d --wait postgres",
+    "db:down": "docker compose -f infra/dev/docker-compose.yml down",
+    "db:migrate": "node --env-file-if-exists=.env scripts/db-migrate.ts",
+    "check:boundaries": "node scripts/check-boundaries.ts",
+    "check:schemas": "node scripts/export-schemas.ts --check",
+    "schemas:export": "node scripts/export-schemas.ts",
+    "check:secrets": "node scripts/check-secrets.ts",
+    "check:lockfiles": "node scripts/check-lockfiles.ts",
+    "check:specs": "node scripts/validate-specs.ts",
+    "python:check": "node scripts/python-check.ts",
+    "rust:check": "node scripts/rust-check.ts",
+    "smoke": "node --env-file-if-exists=.env scripts/smoke.ts",
+    "p00:acceptance": "node scripts/p00/acceptance.ts",
+    "p00:verify": "node scripts/p00/verify.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@harness/artifacts": "workspace:*",
+    "@harness/config": "workspace:*",
+    "@harness/contracts": "workspace:*",
+    "@harness/events": "workspace:*",
+    "@harness/observability": "workspace:*",
+    "@harness/persistence": "workspace:*",
+    "@harness/traceability": "workspace:*",
+    "@types/node": "24.19.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.2",
+    "zod": "4.6.5"
+  }
+}

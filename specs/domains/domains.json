@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "source": "MASTER_PROJECT_WORKFLOW.md §4 Architecture Domains",
+  "domains": [
+    {
+      "id": "S01",
+      "name": "Harness Kernel",
+      "responsibility": "Lifecycle, state machines, contracts, configuration"
+    },
+    {
+      "id": "S02",
+      "name": "Model Intelligence Plane",
+      "responsibility": "Model adapters, routing, fallback, inference"
+    },
+    {
+      "id": "S03",
+      "name": "Context & Knowledge Plane",
+      "responsibility": "Context compilation, retrieval, indexing"
+    },
+    {
+      "id": "S04",
+      "name": "Agent Runtime",
+      "responsibility": "Agent identity, lifecycle, spawning, hierarchy"
+    },
+    {
+      "id": "S05",
+      "name": "Orchestration & Goals",
+      "responsibility": "Goals, planning, DAGs, scheduling, delegation"
+    },
+    {
+      "id": "S06",
+      "name": "Capability & Tool Plane",
+      "responsibility": "Tools, skills, hooks, plugins, MCP"
+    },
+    {
+      "id": "S07",
+      "name": "Security & Human Authority",
+      "responsibility": "Permissions, policy, trust, approvals, secrets"
+    },
+    {
+      "id": "S08",
+      "name": "Execution & Isolation Fabric",
+      "responsibility": "Processes, containers, VMs, remote workers"
+    },
+    {
+      "id": "S09",
+      "name": "Memory & Durable State",
+      "responsibility": "Working memory, durable memory, persistence"
+    },
+    {
+      "id": "S10",
+      "name": "Event & Automation Plane",
+      "responsibility": "Events, triggers, schedules, background agents"
+    },
+    {
+      "id": "S11",
+      "name": "Artifact & Verification Plane",
+      "responsibility": "Outputs, evidence, verification"
+    },
+    {
+      "id": "S12",
+      "name": "Multi-Agent Communication",
+      "responsibility": "Structured messaging, A2A, remote agents"
+    },
+    {
+      "id": "S13",
+      "name": "Multimodal / Voice / Computer",
+      "responsibility": "Voice, vision, browser, GUI/computer use"
+    },
+    {
+      "id": "S14",
+      "name": "Observability & Reliability",
+      "responsibility": "Logs, traces, replay, debugging, recovery"
+    },
+    {
+      "id": "S15",
+      "name": "Evaluation & Self-Improvement",
+      "responsibility": "Evals, benchmarks, controlled improvement"
+    },
+    {
+      "id": "S16",
+      "name": "Human Experience / Mission Control",
+      "responsibility": "UI, steering, approvals, visualization"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "$id": "urn:harness:schema:event.artifact.created:v1",
+  "title": "event.artifact.created",
+  "x-version": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^art_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "content_hash": {
+      "type": "object",
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "const": "sha256"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "algorithm",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "media_type": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "artifact_id",
+    "content_hash",
+    "media_type"
+  ],
+  "additionalProperties": false
+}

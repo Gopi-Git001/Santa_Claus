@@ -1,0 +1,22 @@
+{
+  "$id": "urn:harness:schema:event.graph.started:v1",
+  "title": "event.graph.started",
+  "x-version": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "graph": {
+      "type": "string",
+      "minLength": 1
+    },
+    "graph_version": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "graph",
+    "graph_version"
+  ],
+  "additionalProperties": false
+}

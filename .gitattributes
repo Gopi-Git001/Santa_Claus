@@ -1,0 +1,8 @@
+# Normalise line endings in the repository and in every checkout so hashes of
+# migrations, schema snapshots and evidence are identical on Windows, macOS and
+# Linux CI (core.autocrlf would otherwise rewrite them on Windows checkouts).
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.gz binary

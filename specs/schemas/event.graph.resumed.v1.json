@@ -1,0 +1,27 @@
+{
+  "$id": "urn:harness:schema:event.graph.resumed:v1",
+  "title": "event.graph.resumed",
+  "x-version": 1,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "graph": {
+      "type": "string",
+      "minLength": 1
+    },
+    "graph_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resume_kind": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "graph",
+    "graph_version",
+    "resume_kind"
+  ],
+  "additionalProperties": false
+}
